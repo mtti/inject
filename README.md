@@ -204,6 +204,8 @@ You can create instances of mtti.Inject.Context (the base class) and mtti.Inject
 
 ## Development
 
+This project is intended to be built on the command line and does not come with any solution or project files.
+
 ### Compiling
 
 0. You need bash to run the build script, including on Windows.
