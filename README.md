@@ -179,3 +179,9 @@ You can create instances of mtti.Inject.Context (the base class) and mtti.Inject
 0. Run `build.sh`.
 0. A `dist` directory will be created and will contain a `mtti` directory which you can copy into your Unity project.
 0. In Unity, adjust the import settings for `dist/mtti/Inject/UnityDll` and `dist/mtti/Inject/UnityEditorDll` so that they're included only outside the editor and only inside the editor, respectively.
+
+### Running tests
+
+0. The Mono executable `mono` needs to be in PATH.
+0. Copy `nunitlite.dll`, `nunit.framework.dll` and `NUnit.System.Linq.dll` into the `dependencies` directory.
+0. Run `test.sh`.
