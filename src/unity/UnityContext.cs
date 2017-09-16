@@ -22,7 +22,7 @@ using UnityEngine.SceneManagement;
 namespace mtti.Inject
 {
     /// <summary>
-    /// Unity-specific <see cref="mtti.Common.Context"/> with additional methods for injecting
+    /// Unity-specific <see cref="mtti.Inject.Context"/> with additional methods for injecting
     /// depdendencies into Unity scenes and GameObjects.
     /// </summary>
     public class UnityContext : Context
@@ -34,7 +34,7 @@ namespace mtti.Inject
         protected List<MonoBehaviour> componentBuffer = new List<MonoBehaviour>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="mtti.Common.Unity.UnityContext"/> class.
+        /// Initializes a new instance of the <see cref="mtti.Inject.UnityContext"/> class.
         /// </summary>
         public UnityContext() : base()
         {

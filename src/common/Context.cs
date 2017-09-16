@@ -110,9 +110,9 @@ namespace mtti.Inject
 
         /// <summary>
         /// The type of the attribute used to find inject methods. This is changeable to allow
-        /// <see cref="mtti.Editor.UnityEditorContext"/> to inject dependencies inside the Unity
-        /// editor using its own <see cref="mtti.Editor.InjectInEditorAttribute"/> rather than the
-        /// default <see cref="mtti.Common.InjectAttribute"/>.
+        /// <see cref="mtti.Inject.UnityEditorContext"/> to inject dependencies inside the Unity
+        /// editor using its own <see cref="mtti.Inject.InjectInEditorAttribute"/> rather than the
+        /// default <see cref="mtti.Inject.InjectAttribute"/>.
         /// </summary>
         private Type attributeType = typeof(InjectAttribute);
 
@@ -153,7 +153,7 @@ namespace mtti.Inject
             = new Dictionary<Type, List<object[]>>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="mtti.Common.Context"/> class.
+        /// Initializes a new instance of the <see cref="mtti.Inject.Context"/> class.
         /// </summary>
         public Context()
         {
@@ -242,8 +242,8 @@ namespace mtti.Inject
 
         /// <summary>
         /// Inject dependencies into an object. Fields with
-        /// <see cref="mtti.Common.InjectAttribute"/> will be set to values from this context.
-        /// Methods with <see cref="mtti.Common.InjectAttribute"/> will be executed with arguments
+        /// <see cref="mtti.Inject.InjectAttribute"/> will be set to values from this context.
+        /// Methods with <see cref="mtti.Inject.InjectAttribute"/> will be executed with arguments
         /// set to values from this context. Methods must have at least one parameter to be called.
         /// </summary>
         /// <param name="target">The target object.</param>
@@ -266,7 +266,7 @@ namespace mtti.Inject
         }
 
         /// <summary>
-        /// Finds injectables marked with <see cref="mtti.Common.ServiceAttribute"/> and binds them
+        /// Finds injectables marked with <see cref="mtti.Inject.ServiceAttribute"/> and binds them
         /// as lazy dependencies.
         /// </summary>
         protected internal void BindLazyFromCurrentAppDomain()
