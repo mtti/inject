@@ -437,7 +437,6 @@ namespace mtti.Inject
                         type.FullName, keyType.FullName));
             }
             this.lazyFactories[keyType] = new DefaultConstructorDependencyFactory(type);
-            //UnityEngine.Debug.LogFormat("BindLazy {0}", keyType.FullName);
         }
 
         /// <summary>
@@ -462,7 +461,6 @@ namespace mtti.Inject
         /// <param name="type">The lazy dependency's key type.</param>
         private object InitializeLazy(Type type)
         {
-            //UnityEngine.Debug.LogFormat("InitializeLazy {0}", type.FullName);
             if (!this.lazyFactories.ContainsKey(type))
             {
                 throw new DependencyInjectionException("Unmet dependency: " + type.ToString());

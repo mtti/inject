@@ -57,7 +57,6 @@ namespace mtti.Inject
                 return;
             }
             var rootGameObjects = scene.GetRootGameObjects();
-            //Debug.LogFormat("Injecting {0} root game objects in scene {1}", rootGameObjects.Length, scene.name);
             for (int i = 0; i < rootGameObjects.Length; i++)
             {
                 this.Inject(rootGameObjects[i]);
@@ -70,11 +69,9 @@ namespace mtti.Inject
         /// <param name="obj">Target GameObject.</param>
         public void Inject(GameObject obj)
         {
-            //Debug.LogFormat("Injecting {0}", obj.name);
             obj.GetComponents<MonoBehaviour>(this.componentBuffer);
             for (int i = 0, count = this.componentBuffer.Count; i < count; i++)
             {
-                //Debug.LogFormat("Injecting component {0}", this.componentBuffer[i].GetType().FullName);
                 this.Inject(this.componentBuffer[i]);
             }
             this.componentBuffer.Clear();
