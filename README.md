@@ -36,7 +36,7 @@ Services are normal C# classes marked with the Service attribute. An instance of
 
 ### Receiving dependencies
 
-MonoBehaviours and other services get dependencies injected directly into any member variable marked with the `Inject` attribute:
+MonoBehaviours and other services get dependencies injected directly into any field marked with the `Inject` attribute:
 
     // ExampleScript.cs
 
@@ -46,6 +46,39 @@ MonoBehaviours and other services get dependencies injected directly into any me
 
     public class ExampleScript : MonoBehaviour {
         [Inject] private ExampleService exampleService = null;
+    }
+
+Method injection is also supported:
+
+    // ExampleScript.cs
+
+    using System;
+    using UnityEngine;
+    using mtti.Inject;
+
+    public class ExampleScript : MonoBehaviour {
+        private ExampleService exampleService = null;
+
+        [Inject]
+        private OnInject(ExampleService exampleService) {
+            this.exampleService = exampleService;
+        }
+    }
+
+The injection method gets called after field injection even if it has no parameters so you can use it as a callback to initialize objects after they've received their dependencies:
+
+    // ExampleScript.cs
+
+    using System;
+    using UnityEngine;
+    using mtti.Inject;
+
+    public class ExampleScript : MonoBehaviour {
+        [Inject] private ExampleService exampleService = null;
+
+        private OnInject() {
+            this.gameObject.SetActive(true);
+        }
     }
 
 ### Injecting manually
