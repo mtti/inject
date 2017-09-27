@@ -3,13 +3,14 @@
 set -e
 
 MCS="mcs"
+DEPENDENCIES="${DEPENDENCIES:-dependencies}"
 
 mkdir -p dist
 
 $MCS -t:exe -codepage:utf8 -sdk:2 -r:System \
     -out:dist/mttiInject.tests.exe \
-    -r:"dependencies/nunit.framework.dll" \
-    -r:"dependencies/nunitlite.dll" \
+    -r:"$DEPENDENCIES/nunit.framework.dll" \
+    -r:"$DEPENDENCIES/nunitlite.dll" \
     -recurse:"src/common/*.cs" \
     -recurse:"src/tests/*.cs"
 
