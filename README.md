@@ -26,8 +26,10 @@ Services are normal C# classes marked with the Service attribute. An instance of
     using mtti.Inject;
 
     [Service]
-    public class ExampleService {
-        public int Sum(int a, int b) {
+    public class ExampleService
+    {
+        public int Sum(int a, int b)
+        {
             return a + b;
         }
     }
@@ -42,8 +44,10 @@ MonoBehaviours and other services get dependencies injected directly into any fi
     using UnityEngine;
     using mtti.Inject;
 
-    public class ExampleScript : MonoBehaviour {
-        [Inject] private ExampleService exampleService = null;
+    public class ExampleScript : MonoBehaviour
+    {
+        [Inject]
+        private ExampleService exampleService = null;
     }
 
 Method injection is also supported:
@@ -54,11 +58,13 @@ Method injection is also supported:
     using UnityEngine;
     using mtti.Inject;
 
-    public class ExampleScript : MonoBehaviour {
+    public class ExampleScript : MonoBehaviour
+    {
         private ExampleService exampleService = null;
 
         [Inject]
-        private OnInject(ExampleService exampleService) {
+        private OnInject(ExampleService exampleService)
+        {
             this.exampleService = exampleService;
         }
     }
@@ -71,10 +77,12 @@ The injection method gets called after field injection even if it has no paramet
     using UnityEngine;
     using mtti.Inject;
 
-    public class ExampleScript : MonoBehaviour {
+    public class ExampleScript : MonoBehaviour
+    {
         [Inject] private ExampleService exampleService = null;
 
-        private OnInject() {
+        private OnInject()
+        {
             this.gameObject.SetActive(true);
         }
     }
@@ -89,13 +97,18 @@ The context is itself available as a service called `UnityContext`. After you've
 
     // ExampleSpawner.cs
 
-    public class ExampleSpawner : MonoBehaviour {
+    public class ExampleSpawner : MonoBehaviour
+    {
         public GameObject enemyPrefab = null;
 
-        [Inject] private UnityContext context = null;
-        [Inject] private ExampleService exampleService = null;
+        [Inject]
+        private UnityContext context = null;
 
-        public void SpawnNewEnemy() {
+        [Inject]
+        private ExampleService exampleService = null;
+
+        public void SpawnNewEnemy()
+        {
             var obj = (GameObject)Instantiate(this.enemyPrefab);
             this.context.Inject(obj);
             return obj;
@@ -121,13 +134,16 @@ ExampleService could be written as:
     using System;
     using mtti.Inject;
 
-    public interface IExampleService {
+    public interface IExampleService
+    {
         int Sum(int a, int b);
     }
 
     [Service(typeof(IExampleService))]
-    public class ExampleService {
-        public int Sum(int a, int b) {
+    public class ExampleService
+    {
+        public int Sum(int a, int b)
+        {
             return a + b;
         }
     }
@@ -140,11 +156,13 @@ After which it can be required using the interface:
     using UnityEngine;
     using mtti.Inject;
 
-    public class ExampleScript : MonoBehaviour {
+    public class ExampleScript : MonoBehaviour
+    {
         private IExampleService exampleService = null;
 
         [Inject]
-        private void OnInject(IExampleService exampleService) {
+        private void OnInject(IExampleService exampleService)
+        {
             this.exampleService = exampleService;
         }
     }
@@ -154,7 +172,8 @@ After which it can be required using the interface:
 Normally a service instance is created using a parametreless default constructor, but if you want a lazily initialized service while still having some more control over how it's initialized, you can use a static factory method.
 
     [Service]
-    private static IExampleService ExampleServiceFactory() {
+    private static IExampleService ExampleServiceFactory()
+    {
         return new ExampleService();
     }
 
@@ -165,13 +184,16 @@ Another use case is when you want a service to exist as a GameObject in your Uni
     using UnityEngine;
     using mtti.Inject;
 
-    public class MyService : MonoBehaviour {
+    public class MyService : MonoBehaviour
+    {
         [Service]
-        private static MyService FindMyService() {
+        private static MyService FindMyService()
+        {
             return (MyService)UnityEngine.Object.FindObjectOfType(typeof(MyService));
         }
 
-        public int Sum(int a, int b) {
+        public int Sum(int a, int b)
+        {
             return a + b;
         }
     }
@@ -186,8 +208,10 @@ Implement the `mtti.Inject.IUpdate` interface in your service and its `OnUpdate(
     using mtti.Inject;
 
     [Service]
-    public class ExampleService : IUpdate {
-        public void OnUpdate() {
+    public class ExampleService : IUpdate
+    {
+        public void OnUpdate()
+        {
             // Called every frame
         }
     }
