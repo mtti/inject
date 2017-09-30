@@ -6,13 +6,11 @@ Released under the Apache License, Version 2.0.
 
 ## Basic usage
 
-Here is a quick overview of what you need to do to use this library. More details follow below.
-
-0. Add mttiInject into your Unity project. I do not intend to distribute a binary or unitypackage version of this library during pre-release development, so see the *Compiling* section near the end of this README for instructions on how to build it yourself.
-0. Add the `mtti.Inject.DependencyInjector` MonoBehaviour to an empty GameObject, or to your existing "main" GameObject if you have one.
-0. Implement services as plain C# classes (not as MonoBehaviours or ScriptableObjects) and mark them with `mtti.Inject.ServiceAttribute`.
-0. Add a method to your MonoBehaviours to receive dependencies. You can call the methods whatever you want and they don't need to be `public` either. Just mark them with `mtti.Inject.InjectAttribute`.
-0. If you create new GameObjets programmatically (from prefabs with `Instantiate`, for example) inject dependencies into them manually.
+1. Add mttiInject into your Unity project. I do not intend to distribute a binary or unitypackage version of this library during pre-release development, so see the *Compiling* section near the end of this README for instructions on how to build it yourself.
+2. Add the `mtti.Inject.DependencyInjector` MonoBehaviour to an empty GameObject, or to your existing "main" GameObject if you have one.
+3. Implement services as plain C# classes (not as MonoBehaviours or ScriptableObjects) and mark them with `mtti.Inject.ServiceAttribute`.
+4. Add a method to your MonoBehaviours to receive dependencies. You can call the methods whatever you want and they don't need to be `public` either. Just mark them with `mtti.Inject.InjectAttribute`.
+5. If you create new GameObjets programmatically (from prefabs with `Instantiate`, for example) inject dependencies into them manually.
 
 ### Adding the EntryPoint
 
@@ -208,15 +206,15 @@ This project is intended to be built on the command line and does not come with 
 
 ### Compiling
 
-0. You need bash to run the build script, including on Windows.
-0. The Mono `mcs` compiler needs to be in PATH.
-0. Copy `UnityEngine.dll` and `UnityEditor.dll` from your Unity installation into the dependencies directory in this repository.
-0. Run `build.sh`.
-0. A `dist` directory will be created and will contain a `mtti` directory which you can copy into your Unity project.
-0. In Unity, adjust the import settings for `dist/mtti/Inject/UnityDll` and `dist/mtti/Inject/UnityEditorDll` so that they're included only outside the editor and only inside the editor, respectively.
+1. You need bash to run the build script, including on Windows.
+2. The Mono `mcs` compiler needs to be in PATH.
+3. Copy `UnityEngine.dll` and `UnityEditor.dll` from your Unity installation into the dependencies directory in this repository.
+4. Run `build.sh`.
+5. A `dist` directory will be created and will contain a `mtti` directory which you can copy into your Unity project.
+6. In Unity, adjust the import settings for `dist/mtti/Inject/UnityDll` and `dist/mtti/Inject/UnityEditorDll` so that they're included only outside the editor and only inside the editor, respectively.
 
 ### Running tests
 
-0. The Mono executable `mono` needs to be in PATH.
-0. Copy `nunitlite.dll`, `nunit.framework.dll` and `NUnit.System.Linq.dll` into the `dependencies` directory.
-0. Run `test.sh`.
+1. The Mono executable `mono` needs to be in PATH.
+2. Copy `nunitlite.dll`, `nunit.framework.dll` and `NUnit.System.Linq.dll` into the `dependencies` directory.
+3. Run `test.sh`.
