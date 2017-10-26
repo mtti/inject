@@ -12,7 +12,7 @@ Released under the Apache License, Version 2.0.
 4. Add a method to your MonoBehaviours to receive dependencies. You can call the methods whatever you want and they don't need to be `public` either. Just mark them with `mtti.Inject.InjectAttribute`.
 5. If you create new GameObjets programmatically (from prefabs with `Instantiate`, for example) inject dependencies into them manually.
 
-### Adding the EntryPoint
+### Adding the dependency injector component
 
 Add the *Dependency Injector* component to an empty GameObject. Take care not to let multiple dependency injectors exist at the same time as the results of doing so are undefined.
 
