@@ -1,0 +1,26 @@
+<Project DefaultTargets="Build"
+    ToolsVersion="2.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <AssemblyName>mttiInject</AssemblyName>
+        <UnityDllPath>dist\mtti\Inject\UnityDll\</UnityDllPath>
+        <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <UnitySources Include="src/common/**/*.cs; src/unity/**/*.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <UnityEngineDll Include="dependencies/UnityEngine.dll" />
+    </ItemGroup>
+
+    <Target Name="Build">
+        <MakeDir Directories="$(UnityDllPath)" Condition="!Exists('$(UnityDllPath)')" />
+        <Csc
+            Sources="@(UnitySources)"
+            TargetType="library"
+            References="@(UnityEngineDll)"
+            OutputAssembly="$(UnityDllPath)$(AssemblyName).dll" />
+    </Target>
+</Project>
