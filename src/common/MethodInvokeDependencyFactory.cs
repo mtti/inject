@@ -24,23 +24,23 @@ namespace mtti.Inject
     /// </summary>
     public class MethodInvokeDependencyFactory : IDependencyFactory
     {
-        private MethodInfo method = null;
+        private MethodInfo _method = null;
 
-        private object instance = null;
+        private object _instance = null;
 
-        private object[] parameters = null;
+        private object[] _parameters = null;
 
         public MethodInvokeDependencyFactory(MethodInfo method, object instance,
             object[] parameters)
         {
-            this.method = method;
-            this.instance = instance;
-            this.parameters = parameters;
+            _method = method;
+            _instance = instance;
+            _parameters = parameters;
         }
 
         public object Get()
         {
-            return this.method.Invoke(this.instance, this.parameters);
+            return _method.Invoke(_instance, _parameters);
         }
     }
 }

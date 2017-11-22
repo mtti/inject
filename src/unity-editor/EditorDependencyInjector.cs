@@ -24,6 +24,8 @@ namespace mtti.Inject
 {
 	public class EditorDependencyInjector
 	{
+		private static EditorDependencyInjector s_instance = null;
+
 		static EditorDependencyInjector()
 		{
 			CheckEditMode();
@@ -34,11 +36,9 @@ namespace mtti.Inject
 		{
 			get
 			{
-				return instance;
+				return s_instance;
 			}
 		}
-
-		private static EditorDependencyInjector instance = null;
 
 		[UnityEditor.Callbacks.DidReloadScripts]
 		private static void DidReloadScripts()
@@ -50,29 +50,29 @@ namespace mtti.Inject
 		{
 			if (EditorApplication.isPlaying)
 			{
-				instance = null;
+				s_instance = null;
 			}
 			CheckEditMode();
 		}
 
 		private static void CheckEditMode()
 		{
-			if (instance == null && !EditorApplication.isPlaying)
+			if (s_instance == null && !EditorApplication.isPlaying)
 			{
-				instance = new EditorDependencyInjector();
-				instance.Initialize();
+				s_instance = new EditorDependencyInjector();
+				s_instance.Initialize();
 			}
 		}
+
+		private UnityEditorInjector _injector;
 
 		public UnityEditorInjector Injector
 		{
 			get
 			{
-				return this.injector;
+				return _injector;
 			}
 		}
-
-		private UnityEditorInjector injector;
 
 		private EditorDependencyInjector()
 		{
@@ -80,8 +80,8 @@ namespace mtti.Inject
 
 		private void Initialize()
 		{
-			this.injector = new UnityEditorInjector();
-			SceneManager.sceneLoaded += this.OnSceneLoaded;
+			_injector = new UnityEditorInjector();
+			SceneManager.sceneLoaded += OnSceneLoaded;
 			InjectAllScenes();
 		}
 
@@ -92,14 +92,14 @@ namespace mtti.Inject
 				var scene = SceneManager.GetSceneAt(i);
 				if (scene.isLoaded)
 				{
-					this.injector.Inject(scene);
+					_injector.Inject(scene);
 				}
 			}
 		}
 
 		private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
 		{
-			this.injector.Inject(scene);
+			_injector.Inject(scene);
 		}
 	}
 }

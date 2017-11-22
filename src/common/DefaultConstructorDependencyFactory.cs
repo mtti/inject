@@ -24,16 +24,16 @@ namespace mtti.Inject
     /// </summary>
     public class DefaultConstructorDependencyFactory : IDependencyFactory
     {
-        private Type type = null;
+        private Type _type = null;
 
         public DefaultConstructorDependencyFactory(Type type)
         {
-            this.type = type;
+            _type = type;
         }
 
         public object Get()
         {
-            return Activator.CreateInstance(this.type);
+            return Activator.CreateInstance(_type);
         }
     }
 }

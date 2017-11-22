@@ -106,7 +106,7 @@ namespace mtti.Inject
             }
         }
 
-        private List<IUpdate> updateables = new List<IUpdate>();
+        private List<IUpdate> _updateables = new List<IUpdate>();
 
         /// <summary>
         /// The type of the attribute used to find inject methods. This is changeable to allow
@@ -114,42 +114,43 @@ namespace mtti.Inject
         /// editor using its own <see cref="mtti.Inject.InjectInEditorAttribute"/> rather than the
         /// default <see cref="mtti.Inject.InjectAttribute"/>.
         /// </summary>
-        private Type attributeType = typeof(InjectAttribute);
+        private Type _attributeType = typeof(InjectAttribute);
 
         /// <summary>
         /// Stores the injectable dependencies.
         /// </summary>
-        private Dictionary<Type, object> dependencies = new Dictionary<Type, object>();
+        private Dictionary<Type, object> _dependencies = new Dictionary<Type, object>();
 
         /// <summary>
         /// Factories for lazy dependencies keyed by dependency type.
         /// </summary>
-        private Dictionary<Type, IDependencyFactory> lazyFactories
+        private Dictionary<Type, IDependencyFactory> _lazyFactories
             = new Dictionary<Type, IDependencyFactory>();
 
         /// <summary>
         /// Indexes dependent types by dependency type.
         /// </summary>
-        private Dictionary<Type, HashSet<Type>> relationships
+        private Dictionary<Type, HashSet<Type>> _relationships
             = new Dictionary<Type, HashSet<Type>>();
 
         /// <summary>
-        /// Caches injectable fields per type so that they don't need to be looked up every time an object of that
-        /// type is injected.
+        /// Caches injectable fields per type so that they don't need to be looked up every time an
+        /// object of that type is injected.
         /// </summary>
-        private Dictionary<Type, List<FieldInfo>> fieldCache = new Dictionary<Type, List<FieldInfo>>();
+        private Dictionary<Type, List<FieldInfo>> _fieldCache
+            = new Dictionary<Type, List<FieldInfo>>();
 
         /// <summary>
         /// Caches injectable methods per type.
         /// </summary>
-        private Dictionary<Type, List<MethodInfo>> methodCache
+        private Dictionary<Type, List<MethodInfo>> _methodCache
             = new Dictionary<Type, List<MethodInfo>>();
 
         /// <summary>
         /// Caches arguments of injectable methods per type. List indexes match those of
         /// methodCache.
         /// </summary>
-        private Dictionary<Type, List<object[]>> argumentCache
+        private Dictionary<Type, List<object[]>> _argumentCache
             = new Dictionary<Type, List<object[]>>();
 
         /// <summary>
@@ -157,12 +158,12 @@ namespace mtti.Inject
         /// </summary>
         public Injector()
         {
-            this.Initialize(typeof(InjectAttribute));
+            Initialize(typeof(InjectAttribute));
         }
 
         protected Injector(Type attributeType)
         {
-            this.Initialize(attributeType);
+            Initialize(attributeType);
         }
 
         /// <summary>
@@ -183,20 +184,20 @@ namespace mtti.Inject
         /// <param name="obj">An instance of the injectable.</param>
         public Injector Bind(Type type, object obj)
         {
-            if (this.dependencies.ContainsKey(type))
+            if (_dependencies.ContainsKey(type))
             {
                 throw new DependencyInjectionException("Already bound: " + type.ToString());
             }
 
-            if (this.relationships.ContainsKey(type))
+            if (_relationships.ContainsKey(type))
             {
-                foreach (var targetType in this.relationships[type])
+                foreach (var targetType in _relationships[type])
                 {
-                    this.ClearCaches(targetType);
+                    ClearCaches(targetType);
                 }
             }
 
-            this.dependencies[type] = obj;
+            _dependencies[type] = obj;
             Inject(obj);
 
             BindUpdateable(obj);
@@ -210,7 +211,7 @@ namespace mtti.Inject
         /// <typeparam name="T">The type of the dependency, typically an interface.</typeparam>
         public T Get<T>() where T : class
         {
-            return this.Get(typeof(T)) as T;
+            return Get(typeof(T)) as T;
         }
 
         /// <summary>
@@ -219,11 +220,11 @@ namespace mtti.Inject
         /// <param name="type">The type of the dependency, typically and interface.</param>
         public object Get(Type type)
         {
-            if (this.dependencies.ContainsKey(type))
+            if (_dependencies.ContainsKey(type))
             {
-                return this.dependencies[type];
+                return _dependencies[type];
             }
-            else if (this.lazyFactories.ContainsKey(type))
+            else if (_lazyFactories.ContainsKey(type))
             {
                 return InitializeLazy(type);
             }
@@ -250,8 +251,8 @@ namespace mtti.Inject
         public void Inject(object target)
         {
             var targetType = target.GetType();
-            this.InjectFields(target, targetType);
-            this.InjectMethods(target, targetType);
+            InjectFields(target, targetType);
+            InjectMethods(target, targetType);
         }
 
         /// <summary>
@@ -259,9 +260,9 @@ namespace mtti.Inject
         /// </summary>
         public void OnUpdate()
         {
-            for (int i = 0, count = this.updateables.Count; i < count; i++)
+            for (int i = 0, count = _updateables.Count; i < count; i++)
             {
-                this.updateables[i].OnUpdate();
+                _updateables[i].OnUpdate();
             }
         }
 
@@ -291,8 +292,8 @@ namespace mtti.Inject
 
         private void Initialize(Type attributeType)
         {
-            this.attributeType = attributeType;
-            this.dependencies[typeof(Injector)] = this;
+            _attributeType = attributeType;
+            _dependencies[typeof(Injector)] = this;
         }
 
         /// <summary>
@@ -302,9 +303,9 @@ namespace mtti.Inject
         private void BindUpdateable(object target)
         {
             var updateable = target as IUpdate;
-            if (updateable != null && !this.updateables.Contains(updateable))
+            if (updateable != null && !_updateables.Contains(updateable))
             {
-                this.updateables.Add(updateable);
+                _updateables.Add(updateable);
             }
         }
 
@@ -317,9 +318,9 @@ namespace mtti.Inject
         {
             List<FieldInfo> cachedFields = null;
 
-            if (this.fieldCache.ContainsKey(type))
+            if (_fieldCache.ContainsKey(type))
             {
-                cachedFields = this.fieldCache[type];
+                cachedFields = _fieldCache[type];
             }
             else
             {
@@ -329,14 +330,14 @@ namespace mtti.Inject
                 for (int i = 0; i < fields.Length; i++)
                 {
                     var attribute
-                        = Attribute.GetCustomAttribute(fields[i], this.attributeType, true);
+                        = Attribute.GetCustomAttribute(fields[i], _attributeType, true);
                     if (attribute != null)
                     {
-                        this.AddRelationship(fields[i].FieldType, type);
+                        AddRelationship(fields[i].FieldType, type);
                         cachedFields.Add(fields[i]);
                     }
                 }
-                this.fieldCache[type] = cachedFields;
+                _fieldCache[type] = cachedFields;
             }
 
             int count = cachedFields.Count;
@@ -345,7 +346,7 @@ namespace mtti.Inject
                 for (int i = 0; i < count; i++)
                 {
                     var field = cachedFields[i];
-                    field.SetValue(target, this.Get(field.FieldType));
+                    field.SetValue(target, Get(field.FieldType));
                 }
             }
         }
@@ -360,10 +361,10 @@ namespace mtti.Inject
             List<MethodInfo> cachedMethods = null;
             List<object[]> cachedArguments = null;
 
-            if (this.methodCache.ContainsKey(type))
+            if (_methodCache.ContainsKey(type))
             {
-                cachedMethods = this.methodCache[type];
-                cachedArguments = this.argumentCache[type];
+                cachedMethods = _methodCache[type];
+                cachedArguments = _argumentCache[type];
             }
             else
             {
@@ -375,7 +376,7 @@ namespace mtti.Inject
                 for (int i = 0; i < methods.Length; i++)
                 {
                     var attribute
-                        = Attribute.GetCustomAttribute(methods[i], this.attributeType, true);
+                        = Attribute.GetCustomAttribute(methods[i], _attributeType, true);
                     if (attribute == null)
                     {
                         continue;
@@ -385,15 +386,15 @@ namespace mtti.Inject
                     object[] arguments = new object[parameters.Length];
                     for (int j = 0; j < parameters.Length; j++)
                     {
-                        this.AddRelationship(parameters[j].ParameterType, type);
-                        arguments[j] = this.Get(parameters[j].ParameterType);
+                        AddRelationship(parameters[j].ParameterType, type);
+                        arguments[j] = Get(parameters[j].ParameterType);
                     }
 
                     cachedMethods.Add(methods[i]);
                     cachedArguments.Add(arguments);
                 }
-                this.methodCache[type] = cachedMethods;
-                this.argumentCache[type] = cachedArguments;
+                _methodCache[type] = cachedMethods;
+                _argumentCache[type] = cachedArguments;
             }
 
             for (int i = 0, count = cachedMethods.Count; i < count; i++)
@@ -409,18 +410,18 @@ namespace mtti.Inject
         /// <param name="targetType">Target type.</param>
         private void AddRelationship(Type dependencyType, Type targetType)
         {
-            if (!this.relationships.ContainsKey(dependencyType))
+            if (!_relationships.ContainsKey(dependencyType))
             {
-                this.relationships[dependencyType] = new HashSet<Type>();
+                _relationships[dependencyType] = new HashSet<Type>();
             }
-            this.relationships[dependencyType].Add(targetType);
+            _relationships[dependencyType].Add(targetType);
         }
 
         private void ClearCaches(Type targetType)
         {
-            this.fieldCache.Remove(targetType);
-            this.methodCache.Remove(targetType);
-            this.argumentCache.Remove(targetType);
+            _fieldCache.Remove(targetType);
+            _methodCache.Remove(targetType);
+            _argumentCache.Remove(targetType);
         }
 
         /// <summary>
@@ -436,7 +437,7 @@ namespace mtti.Inject
                 throw new DependencyInjectionException(string.Format("{0} does not implement {1}",
                         type.FullName, keyType.FullName));
             }
-            this.lazyFactories[keyType] = new DefaultConstructorDependencyFactory(type);
+            _lazyFactories[keyType] = new DefaultConstructorDependencyFactory(type);
         }
 
         /// <summary>
@@ -450,7 +451,7 @@ namespace mtti.Inject
                 throw new DependencyInjectionException(
                     string.Format("{0} is not static", method.Name));
             }
-            this.lazyFactories[method.ReturnType] = new MethodInvokeDependencyFactory(
+            _lazyFactories[method.ReturnType] = new MethodInvokeDependencyFactory(
                 method, null, null);
         }
 
@@ -461,11 +462,11 @@ namespace mtti.Inject
         /// <param name="type">The lazy dependency's key type.</param>
         private object InitializeLazy(Type type)
         {
-            if (!this.lazyFactories.ContainsKey(type))
+            if (!_lazyFactories.ContainsKey(type))
             {
                 throw new DependencyInjectionException("Unmet dependency: " + type.ToString());
             }
-            var instance = this.lazyFactories[type].Get();
+            var instance = _lazyFactories[type].Get();
             Bind(type, instance);
             return instance;
         }

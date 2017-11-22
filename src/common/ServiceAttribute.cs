@@ -33,20 +33,20 @@ namespace mtti.Inject
         {
             get
             {
-                return this.keyType;
+                return _keyType;
             }
         }
 
-        private Type keyType;
+        private Type _keyType;
 
         public ServiceAttribute()
         {
-            this.keyType = null;
+            _keyType = null;
         }
 
         public ServiceAttribute(Type keyType)
         {
-            this.keyType = keyType;
+            _keyType = keyType;
         }
     }
 }
