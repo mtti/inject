@@ -23,7 +23,7 @@ namespace mtti.Inject
     /// <summary>
     /// A minimalistic dependency injection container.
     /// </summary>
-    public class Context
+    public class Injector
     {
         /// <summary>
         /// Finds all types in the current application domain which have a specific attribute.
@@ -110,7 +110,7 @@ namespace mtti.Inject
 
         /// <summary>
         /// The type of the attribute used to find inject methods. This is changeable to allow
-        /// <see cref="mtti.Inject.UnityEditorContext"/> to inject dependencies inside the Unity
+        /// <see cref="mtti.Inject.UnityEditorInjector"/> to inject dependencies inside the Unity
         /// editor using its own <see cref="mtti.Inject.InjectInEditorAttribute"/> rather than the
         /// default <see cref="mtti.Inject.InjectAttribute"/>.
         /// </summary>
@@ -153,35 +153,35 @@ namespace mtti.Inject
             = new Dictionary<Type, List<object[]>>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="mtti.Inject.Context"/> class.
+        /// Initializes a new instance of the <see cref="mtti.Inject.Injector"/> class.
         /// </summary>
-        public Context()
+        public Injector()
         {
             this.Initialize(typeof(InjectAttribute));
         }
 
-        protected Context(Type attributeType)
+        protected Injector(Type attributeType)
         {
             this.Initialize(attributeType);
         }
 
         /// <summary>
-        /// Add a new injectable dependency to this context. The generic version.
+        /// Add a new injectable dependency to this injector. The generic version.
         /// </summary>
         /// <param name="obj">The concrete implementation of T</param>
         /// <typeparam name="T">The type of the dependency, typically an interface.</typeparam>
-        public Context Bind<T>(T obj) where T : class
+        public Injector Bind<T>(T obj) where T : class
         {
             var type = typeof(T);
             return Bind(type, obj);
         }
 
         /// <summary>
-        /// Add a new injectable dependency to this context. The non-generic version.
+        /// Add a new injectable dependency to this injector. The non-generic version.
         /// </summary>
         /// <param name="type">The type of the dependency, typically an interface.</param>
         /// <param name="obj">An instance of the injectable.</param>
-        public Context Bind(Type type, object obj)
+        public Injector Bind(Type type, object obj)
         {
             if (this.dependencies.ContainsKey(type))
             {
@@ -242,9 +242,9 @@ namespace mtti.Inject
 
         /// <summary>
         /// Inject dependencies into an object. Fields with
-        /// <see cref="mtti.Inject.InjectAttribute"/> will be set to values from this context.
+        /// <see cref="mtti.Inject.InjectAttribute"/> will be set to values from this injector.
         /// Methods with <see cref="mtti.Inject.InjectAttribute"/> will be executed with arguments
-        /// set to values from this context. Methods must have at least one parameter to be called.
+        /// set to values from this injector. Methods must have at least one parameter to be called.
         /// </summary>
         /// <param name="target">The target object.</param>
         public void Inject(object target)
@@ -292,7 +292,7 @@ namespace mtti.Inject
         private void Initialize(Type attributeType)
         {
             this.attributeType = attributeType;
-            this.dependencies[typeof(Context)] = this;
+            this.dependencies[typeof(Injector)] = this;
         }
 
         /// <summary>
@@ -424,7 +424,7 @@ namespace mtti.Inject
         }
 
         /// <summary>
-        /// Add a lazy dependency into the context. Lazy dependencies are initialized when they're
+        /// Add a lazy dependency into the injector. Lazy dependencies are initialized when they're
         /// first required during dependency injection.
         /// </summary>
         /// <param name="keyType">The key type of the dependency, typically an interface.</param>

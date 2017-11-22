@@ -22,8 +22,8 @@ namespace mtti.Inject
     /// Marks a class or static method as a provider of a service.
     /// </summary>
     /// <remarks>
-    /// When <see cref="mtti.Inject.Context.BindLazyFromCurrentAppDomain"/> is called, the context
-    /// will find every class and method with this attribute in the current application context and
+    /// When <see cref="mtti.Inject.Injector.BindLazyFromCurrentAppDomain"/> is called, the injector
+    /// will find every class and method with this attribute in the current application injector and
     /// add them as lazy dependencies.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]

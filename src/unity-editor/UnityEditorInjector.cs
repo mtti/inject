@@ -21,16 +21,16 @@ using UnityEditor;
 namespace mtti.Inject
 {
 	/// <summary>
-	/// A variant of <see cref="mtti.Inject.Unity.UnityContext"/> for use inside the Unity editor.
+	/// A variant of <see cref="mtti.Inject.Unity.UnityInjector"/> for use inside the Unity editor.
 	/// Injects dependencies to methods with <see cref="mtti.Inject.InjectInEditorAttribute"/>
 	/// instead of the usual <see cref="mtti.Inject.InjectAttribute"/>.
 	/// </summary>
-	public class UnityEditorContext : UnityContext
+	public class UnityEditorInjector : UnityInjector
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="mtti.Inject.Unity.UnityContext"/> class.
+		/// Initializes a new instance of the <see cref="mtti.Inject.Unity.UnityInjector"/> class.
 		/// </summary>
-		public UnityEditorContext() : base(typeof(InjectInEditorAttribute))
+		public UnityEditorInjector() : base(typeof(InjectInEditorAttribute))
 		{
 			this.BindLazyFromCurrentAppDomain();
 		}

@@ -64,15 +64,15 @@ namespace mtti.Inject
 			}
 		}
 
-		public UnityEditorContext Context
+		public UnityEditorInjector Injector
 		{
 			get
 			{
-				return this.context;
+				return this.injector;
 			}
 		}
 
-		private UnityEditorContext context;
+		private UnityEditorInjector injector;
 
 		private EditorDependencyInjector()
 		{
@@ -80,7 +80,7 @@ namespace mtti.Inject
 
 		private void Initialize()
 		{
-			this.context = new UnityEditorContext();
+			this.injector = new UnityEditorInjector();
 			SceneManager.sceneLoaded += this.OnSceneLoaded;
 			InjectAllScenes();
 		}
@@ -92,14 +92,14 @@ namespace mtti.Inject
 				var scene = SceneManager.GetSceneAt(i);
 				if (scene.isLoaded)
 				{
-					this.context.Inject(scene);
+					this.injector.Inject(scene);
 				}
 			}
 		}
 
 		private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
 		{
-			this.context.Inject(scene);
+			this.injector.Inject(scene);
 		}
 	}
 }

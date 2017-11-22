@@ -87,9 +87,9 @@ namespace mtti.Inject
     }
 
     [TestFixture]
-    public class ContextTests
+    public class InjectorTests
     {
-        private Context context;
+        private Injector injector;
 
         private FakeService fakeService;
 
@@ -101,22 +101,22 @@ namespace mtti.Inject
             this.fakeService = new FakeService();
             this.anotherFakeService = new AnotherFakeService();
 
-            this.context = new Context();
-            this.context.Bind<IFakeService>(this.fakeService);
-            this.context.Bind<IAnotherFakeService>(this.anotherFakeService);
+            this.injector = new Injector();
+            this.injector.Bind<IFakeService>(this.fakeService);
+            this.injector.Bind<IAnotherFakeService>(this.anotherFakeService);
         }
 
         [Test]
         public void BindAndGet()
         {
-            Assert.AreSame(this.fakeService, this.context.Get<IFakeService>());
+            Assert.AreSame(this.fakeService, this.injector.Get<IFakeService>());
         }
 
         [Test]
         public void InjectFields()
         {
             var receiver = new FieldInjectReceiver();
-            this.context.Inject(receiver);
+            this.injector.Inject(receiver);
 
             Assert.AreSame(this.fakeService, receiver.publicFakeService);
             Assert.AreSame(this.anotherFakeService, receiver.publicAnotherFakeService);
@@ -127,7 +127,7 @@ namespace mtti.Inject
         public void InjectMethod()
         {
             var receiver = new MethodInjectReceiver();
-            this.context.Inject(receiver);
+            this.injector.Inject(receiver);
 
             Assert.AreSame(this.fakeService, receiver.fakeService);
             Assert.AreSame(this.anotherFakeService, receiver.anotherFakeService);
@@ -137,15 +137,15 @@ namespace mtti.Inject
         public void ThrowOnUnmetDependency()
         {
             var receiver = new MethodInjectReceiver();
-            var context = new Context();
-            context.Bind<IFakeService>(this.fakeService);
-            Assert.Throws<DependencyInjectionException>(() => { context.Inject(receiver); });
+            var injector = new Injector();
+            injector.Bind<IFakeService>(this.fakeService);
+            Assert.Throws<DependencyInjectionException>(() => { injector.Inject(receiver); });
         }
 
         [Test]
         public void CallOnUpdate()
         {
-            this.context.OnUpdate();
+            this.injector.OnUpdate();
             Assert.AreEqual(1, this.fakeService.OnUpdateCallCount);
         }
     }

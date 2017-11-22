@@ -91,9 +91,9 @@ The injection method gets called after field injection even if it has no paramet
 
 The *Dependency Injector* automatically injects dependencies into all GameObjects in the all loaded scenes when it starts and into all scenes that are loaded after the EntryPoint was created, but it can't magically detect when new GameObjects are created programmatically.
 
-Therefore, you need to manually inject dependencies into new GameObjects you create. You do so using a dependency injection context, which is created automatically by *Dependency Injector* and which is actually responsible for most of the functionality of this library.
+Therefore, you need to manually inject dependencies into new GameObjects you create. You do so using an instance of the Injector class. In a Unity project, one is created automatically by the *Dependency Injector* component.
 
-The context is itself available as a service called `UnityContext`. After you've created a new GameObject, simply call `context.Inject(newGameObject)` to inject dependencies into it.
+The injector is itself available as a service called `UnityInjector`. After you've created a new GameObject, simply call `injector.Inject(newGameObject)` to inject dependencies into it.
 
     // ExampleSpawner.cs
 
@@ -102,7 +102,7 @@ The context is itself available as a service called `UnityContext`. After you've
         public GameObject enemyPrefab = null;
 
         [Inject]
-        private UnityContext context = null;
+        private UnityInjector injector = null;
 
         [Inject]
         private ExampleService exampleService = null;
@@ -110,7 +110,7 @@ The context is itself available as a service called `UnityContext`. After you've
         public void SpawnNewEnemy()
         {
             var obj = (GameObject)Instantiate(this.enemyPrefab);
-            this.context.Inject(obj);
+            this.injector.Inject(obj);
             return obj;
         }
     }
@@ -218,11 +218,11 @@ Implement the `mtti.Inject.IUpdate` interface in your service and its `OnUpdate(
 
 ### Binding manually
 
-You can bind dependencies manually to a context instance. For example, you could do `context.Bind<IExampleService>(new ExampleService());`.
+You can bind dependencies manually to an injector instance. For example, you could do `injector.Bind<IExampleService>(new ExampleService());`.
 
-### Creating contexts manually
+### Creating injectors manually
 
-You can create instances of mtti.Inject.Context (the base class) and mtti.Inject.UnityContext (Unity-specific subclass) normally, for example when writing unit tests.
+You can create instances of mtti.Inject.Injector (the base class) and mtti.Inject.UnityInjector (Unity-specific subclass) normally, for example when writing unit tests.
 
 ## Development
 

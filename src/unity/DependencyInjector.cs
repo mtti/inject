@@ -23,22 +23,22 @@ namespace mtti.Inject
 {
 	public class DependencyInjector : MonoBehaviour
 	{
-		public UnityContext Context
+		public UnityInjector Injector
 		{
 			get
 			{
-				return this.context;
+				return this.injector;
 			}
 		}
 
-		private UnityContext context;
+		private UnityInjector injector;
 
 		private bool started = false;
 
 		private void Awake()
 		{
-			this.context = new UnityContext();
-			this.context.BindLazyFromCurrentAppDomain();
+			this.injector = new UnityInjector();
+			this.injector.BindLazyFromCurrentAppDomain();
 		}
 
 		private void Start()
@@ -55,7 +55,7 @@ namespace mtti.Inject
 
 		private void Update()
 		{
-			this.context.OnUpdate();
+			this.injector.OnUpdate();
 		}
 
 		private void InjectAllScenes()
@@ -65,7 +65,7 @@ namespace mtti.Inject
 				var scene = SceneManager.GetSceneAt(i);
 				if (scene.isLoaded)
 				{
-					this.context.Inject(scene);
+					this.injector.Inject(scene);
 				}
 				else
 				{
@@ -79,7 +79,7 @@ namespace mtti.Inject
 		{
 			if (this.started)
 			{
-				this.context.Inject(scene);
+				this.injector.Inject(scene);
 			}
 		}
 	}

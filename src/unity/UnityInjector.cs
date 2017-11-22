@@ -22,10 +22,10 @@ using UnityEngine.SceneManagement;
 namespace mtti.Inject
 {
     /// <summary>
-    /// Unity-specific <see cref="mtti.Inject.Context"/> with additional methods for injecting
+    /// Unity-specific <see cref="mtti.Inject.Injector"/> with additional methods for injecting
     /// depdendencies into Unity scenes and GameObjects.
     /// </summary>
-    public class UnityContext : Context
+    public class UnityInjector : Injector
     {
         /// <summary>
         /// Temporarily holds the MonoBehaviours of a GameObject while dependencies are injected
@@ -34,14 +34,14 @@ namespace mtti.Inject
         protected List<MonoBehaviour> componentBuffer = new List<MonoBehaviour>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="mtti.Inject.UnityContext"/> class.
+        /// Initializes a new instance of the <see cref="mtti.Inject.UnityInjector"/> class.
         /// </summary>
-        public UnityContext() : base()
+        public UnityInjector() : base()
         {
             Initialize();
         }
 
-        protected UnityContext(Type attributeType) : base(attributeType)
+        protected UnityInjector(Type attributeType) : base(attributeType)
         {
             Initialize();
         }
@@ -84,7 +84,7 @@ namespace mtti.Inject
 
         private void Initialize()
         {
-            this.Bind<UnityContext>(this);
+            this.Bind<UnityInjector>(this);
         }
     }
 }
