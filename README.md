@@ -1,6 +1,4 @@
-**mtti.Inject** is a small C# dependency injection framework. Intended mainly for use in Unity projects, but the core could theoretically be used in other types of C# projects as well.
-
-Consider this library pre-release quality. For a more proven alternative with more features, take a look at [Zenject](https://github.com/modesttree/Zenject).
+**mtti.Inject** is a simple dependency injector for the Unity engine.
 
 Released under the Apache License, Version 2.0.
 
