@@ -326,7 +326,8 @@ namespace mtti.Inject
             {
                 cachedFields = new List<FieldInfo>();
 
-                var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public
+                    | BindingFlags.NonPublic);
                 for (int i = 0; i < fields.Length; i++)
                 {
                     var attribute

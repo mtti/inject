@@ -58,79 +58,79 @@ namespace mtti.Inject
         {
             get
             {
-                return this.privateFakeService;
+                return _privateFakeService;
             }
         }
 
         [Inject]
-        public IFakeService publicFakeService;
+        public IFakeService PublicFakeService;
 
         [Inject]
-        public IAnotherFakeService publicAnotherFakeService;
+        public IAnotherFakeService PublicAnotherFakeService;
 
         [Inject]
-        private IFakeService privateFakeService = null;
+        private IFakeService _privateFakeService = null;
     }
 
     public class MethodInjectReceiver
     {
-        public IFakeService fakeService;
+        public IFakeService FakeService;
 
-        public IAnotherFakeService anotherFakeService;
+        public IAnotherFakeService AnotherFakeService;
 
         [Inject]
         private void Inject(IFakeService fakeService, IAnotherFakeService anotherFakeService)
         {
-            this.fakeService = fakeService;
-            this.anotherFakeService = anotherFakeService;
+            FakeService = fakeService;
+            AnotherFakeService = anotherFakeService;
         }
     }
 
     [TestFixture]
     public class InjectorTests
     {
-        private Injector injector;
+        private Injector _injector;
 
-        private FakeService fakeService;
+        private FakeService _fakeService;
 
-        private AnotherFakeService anotherFakeService;
+        private AnotherFakeService _anotherFakeService;
 
         [SetUp]
         public void Init()
         {
-            this.fakeService = new FakeService();
-            this.anotherFakeService = new AnotherFakeService();
+            _fakeService = new FakeService();
+            _anotherFakeService = new AnotherFakeService();
 
-            this.injector = new Injector();
-            this.injector.Bind<IFakeService>(this.fakeService);
-            this.injector.Bind<IAnotherFakeService>(this.anotherFakeService);
+            _injector = new Injector();
+            _injector.Bind<IFakeService>(_fakeService);
+            _injector.Bind<IAnotherFakeService>(_anotherFakeService);
         }
 
         [Test]
         public void BindAndGet()
         {
-            Assert.AreSame(this.fakeService, this.injector.Get<IFakeService>());
+            Assert.AreSame(_fakeService, _injector.Get<IFakeService>());
         }
 
         [Test]
         public void InjectFields()
         {
             var receiver = new FieldInjectReceiver();
-            this.injector.Inject(receiver);
+            _injector.Inject(receiver);
 
-            Assert.AreSame(this.fakeService, receiver.publicFakeService);
-            Assert.AreSame(this.anotherFakeService, receiver.publicAnotherFakeService);
-            Assert.AreSame(this.fakeService, receiver.PrivateFakeService);
+            Assert.AreSame(_fakeService, receiver.PublicFakeService);
+            Assert.AreSame(_anotherFakeService, receiver.PublicAnotherFakeService);
+            Assert.AreSame(_fakeService, receiver.PrivateFakeService);
         }
 
         [Test]
         public void InjectMethod()
         {
             var receiver = new MethodInjectReceiver();
-            this.injector.Inject(receiver);
+            _injector.Inject(receiver);
 
-            Assert.AreSame(this.fakeService, receiver.fakeService);
-            Assert.AreSame(this.anotherFakeService, receiver.anotherFakeService);
+            Assert.AreSame(_fakeService, receiver.FakeService);
+            Assert.AreSame(_anotherFakeService, receiver.AnotherFakeService);
         }
 
         [Test]
@@ -138,15 +138,15 @@ namespace mtti.Inject
         {
             var receiver = new MethodInjectReceiver();
             var injector = new Injector();
-            injector.Bind<IFakeService>(this.fakeService);
+            injector.Bind<IFakeService>(_fakeService);
             Assert.Throws<DependencyInjectionException>(() => { injector.Inject(receiver); });
         }
 
         [Test]
         public void CallOnUpdate()
         {
-            this.injector.OnUpdate();
-            Assert.AreEqual(1, this.fakeService.OnUpdateCallCount);
+            _injector.OnUpdate();
+            Assert.AreEqual(1, _fakeService.OnUpdateCallCount);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace mtti.Inject
 		/// </summary>
 		public UnityEditorInjector() : base(typeof(InjectInEditorAttribute))
 		{
-			this.BindLazyFromCurrentAppDomain();
+			BindLazyFromCurrentAppDomain();
 		}
 	}
 }

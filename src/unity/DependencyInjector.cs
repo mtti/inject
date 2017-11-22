@@ -27,35 +27,35 @@ namespace mtti.Inject
 		{
 			get
 			{
-				return this.injector;
+				return _injector;
 			}
 		}
 
-		private UnityInjector injector;
+		private UnityInjector _injector;
 
-		private bool started = false;
+		private bool _started = false;
 
 		private void Awake()
 		{
-			this.injector = new UnityInjector();
-			this.injector.BindLazyFromCurrentAppDomain();
+			_injector = new UnityInjector();
+			_injector.BindLazyFromCurrentAppDomain();
 		}
 
 		private void Start()
 		{
 			InjectAllScenes();
-			SceneManager.sceneLoaded += this.OnSceneLoaded;
-			this.started = true;
+			SceneManager.sceneLoaded += OnSceneLoaded;
+			_started = true;
 		}
 
 		private void OnDestroy()
 		{
-			SceneManager.sceneLoaded -= this.OnSceneLoaded;
+			SceneManager.sceneLoaded -= OnSceneLoaded;
 		}
 
 		private void Update()
 		{
-			this.injector.OnUpdate();
+			_injector.OnUpdate();
 		}
 
 		private void InjectAllScenes()
@@ -65,21 +65,21 @@ namespace mtti.Inject
 				var scene = SceneManager.GetSceneAt(i);
 				if (scene.isLoaded)
 				{
-					this.injector.Inject(scene);
+					_injector.Inject(scene);
 				}
 				else
 				{
-					Debug.LogWarningFormat("Not injecting dependencies to scene {0} as it's not loaded",
-						scene.path);
+					Debug.LogWarningFormat(
+                        "Not injecting dependencies to scene {0} as it's not loaded", scene.path);
 				}
 			}
 		}
 
 		private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
 		{
-			if (this.started)
+			if (_started)
 			{
-				this.injector.Inject(scene);
+				_injector.Inject(scene);
 			}
 		}
 	}
