@@ -18,97 +18,107 @@ Add the *Dependency Injector* component to an empty GameObject. Take care not to
 
 Services are normal C# classes marked with the Service attribute. An instance of the class is created automatically the first time it's required.
 
-    // ExampleService.cs
+```csharp
+// ExampleService.cs
 
-    using System;
-    using mtti.Inject;
+using System;
+using mtti.Inject;
 
-    [Service]
-    public class ExampleService
+[Service]
+public class ExampleService
+{
+    public int Sum(int a, int b)
     {
-        public int Sum(int a, int b)
-        {
-            return a + b;
-        }
+        return a + b;
     }
+}
+```
 
 ### Receiving dependencies
 
 MonoBehaviours and other services get dependencies injected directly into any field marked with the `Inject` attribute:
 
-    // ExampleScript.cs
+```csharp
+// ExampleScript.cs
 
-    using System;
-    using UnityEngine;
-    using mtti.Inject;
+using System;
+using UnityEngine;
+using mtti.Inject;
 
-    public class ExampleScript : MonoBehaviour
-    {
-        [Inject]
-        private ExampleService _exampleService;
-    }
+public class ExampleScript : MonoBehaviour
+{
+    [Inject]
+    private ExampleService _exampleService;
+}
+```
 
 Method injection is also supported:
 
-    // ExampleScript.cs
+```csharp
+// ExampleScript.cs
 
-    using System;
-    using UnityEngine;
-    using mtti.Inject;
+using System;
+using UnityEngine;
+using mtti.Inject;
 
-    public class ExampleScript : MonoBehaviour
+public class ExampleScript : MonoBehaviour
+{
+    private ExampleService _exampleService;
+
+    [Inject]
+    private OnInject(ExampleService exampleService)
     {
-        private ExampleService _exampleService;
-
-        [Inject]
-        private OnInject(ExampleService exampleService)
-        {
-            _exampleService = exampleService;
-        }
+        _exampleService = exampleService;
     }
+}
+```
 
 The injection method gets called after field injection even if it has no parameters so you can use it as a callback to initialize objects after they've received their dependencies:
 
-    // ExampleScript.cs
+```csharp
+// ExampleScript.cs
 
-    using System;
-    using UnityEngine;
-    using mtti.Inject;
+using System;
+using UnityEngine;
+using mtti.Inject;
 
-    public class ExampleScript : MonoBehaviour
+public class ExampleScript : MonoBehaviour
+{
+    [Inject]
+    private ExampleService _exampleService;
+
+    private OnInject()
     {
-        [Inject]
-        private ExampleService _exampleService;
-
-        private OnInject()
-        {
-            this.gameObject.SetActive(true);
-        }
+        this.gameObject.SetActive(true);
     }
+}
+```
 
 ### Optional dependencies
 
 Normally, the `[Inject]` attribute throws an exception when the dependency is unmet. If this is undesirable, `[InjectOptional]` instead leaves the value of the field untouched and doesn't throw an exeception.
 
-    // ExampleScript.cs
+```csharp
+// ExampleScript.cs
 
-    using System;
-    using UnityEngine;
-    using mtti.Inject;
+using System;
+using UnityEngine;
+using mtti.Inject;
 
-    public class ExampleScript : MonoBehaviour
+public class ExampleScript : MonoBehaviour
+{
+    [InjectOptional]
+    private ExampleService _exampleService;
+
+    private OnInject()
     {
-        [InjectOptional]
-        private ExampleService _exampleService;
-
-        private OnInject()
+        if (_exampleService != null)
         {
-            if (_exampleService != null)
-            {
-                this.gameObject.SetActive(true);
-            }
+            this.gameObject.SetActive(true);
         }
     }
+}
+```
 
 ### Injecting manually
 
@@ -118,25 +128,27 @@ Therefore, you need to manually inject dependencies into new GameObjects you cre
 
 The injector is itself available as a service called `UnityInjector`. After you've created a new GameObject, simply call `injector.Inject(newGameObject)` to inject dependencies into it.
 
-    // ExampleSpawner.cs
+```csharp
+// ExampleSpawner.cs
 
-    public class ExampleSpawner : MonoBehaviour
+public class ExampleSpawner : MonoBehaviour
+{
+    public GameObject EnemyPrefab;
+
+    [Inject]
+    private UnityInjector _injector;
+
+    [Inject]
+    private ExampleService _exampleService;
+
+    public void SpawnNewEnemy()
     {
-        public GameObject EnemyPrefab;
-
-        [Inject]
-        private UnityInjector _injector;
-
-        [Inject]
-        private ExampleService _exampleService;
-
-        public void SpawnNewEnemy()
-        {
-            var obj = (GameObject)Instantiate(EnemyPrefab);
-            _injector.Inject(obj);
-            return obj;
-        }
+        var obj = (GameObject)Instantiate(EnemyPrefab);
+        _injector.Inject(obj);
+        return obj;
     }
+}
+```
 
 ## Advanced usage
 
@@ -152,92 +164,102 @@ This makes it possible to create mock services for unit testing.
 
 ExampleService could be written as:
 
-    // ExampleService.cs
+```csharp
+// ExampleService.cs
 
-    using System;
-    using mtti.Inject;
+using System;
+using mtti.Inject;
 
-    public interface IExampleService
+public interface IExampleService
+{
+    int Sum(int a, int b);
+}
+
+[Service(typeof(IExampleService))]
+public class ExampleService
+{
+    public int Sum(int a, int b)
     {
-        int Sum(int a, int b);
+        return a + b;
     }
-
-    [Service(typeof(IExampleService))]
-    public class ExampleService
-    {
-        public int Sum(int a, int b)
-        {
-            return a + b;
-        }
-    }
+}
+```
 
 After which it can be injected using the interface:
 
-    // ExampleScript.cs
+```csharp
+// ExampleScript.cs
 
-    using System;
-    using UnityEngine;
-    using mtti.Inject;
+using System;
+using UnityEngine;
+using mtti.Inject;
 
-    public class ExampleScript : MonoBehaviour
+public class ExampleScript : MonoBehaviour
+{
+    private IExampleService _exampleService;
+
+    [Inject]
+    private void OnInject(IExampleService exampleService)
     {
-        private IExampleService _exampleService;
-
-        [Inject]
-        private void OnInject(IExampleService exampleService)
-        {
-            _exampleService = exampleService;
-        }
+        _exampleService = exampleService;
     }
+}
+```
 
 ### Static factory methods
 
 Normally a service instance is created using a parametreless default constructor, but if you want a lazily initialized service while still having some more control over how it's initialized, you can use a static factory method.
 
-    [Service]
-    private static IExampleService ExampleServiceFactory()
-    {
-        return new ExampleService();
-    }
+```csharp
+[Service]
+private static IExampleService ExampleServiceFactory()
+{
+    return new ExampleService();
+}
+```
 
 One situation where you might want to do this is if you want to have a generic service. C# doesn't allow generic types in attribute parameters so you can't do `[Service(typeof(MyGenericService<string>))]`, for example.
 
 Another use case is when you want a service to exist as a GameObject in your Unity scene so you can see it in the hierarchy and inspector.
 
-    using UnityEngine;
-    using mtti.Inject;
+```csharp
+using UnityEngine;
+using mtti.Inject;
 
-    public class MyService : MonoBehaviour
+public class MyService : MonoBehaviour
+{
+    [Service]
+    private static MyService FindMyService()
     {
-        [Service]
-        private static MyService FindMyService()
-        {
-            return (MyService)UnityEngine.Object.FindObjectOfType(typeof(MyService));
-        }
-
-        public int Sum(int a, int b)
-        {
-            return a + b;
-        }
+        return (MyService)UnityEngine.Object.FindObjectOfType(typeof(MyService));
     }
+
+    public int Sum(int a, int b)
+    {
+        return a + b;
+    }
+}
+```
 
 ### Update a service every frame
 
 Implement the `mtti.Inject.IUpdate` interface in your service and its `OnUpdate()` method will get called every frame, just like Unity's `Update()`.
 
-    // ExampleService.cs
+```csharp
+// ExampleService.cs
 
-    using System;
-    using mtti.Inject;
+using System;
+using mtti.Inject;
 
-    [Service]
-    public class ExampleService : IUpdate
+[Service]
+public class ExampleService : IUpdate
+{
+    public void OnUpdate()
     {
-        public void OnUpdate()
-        {
-            // Called every frame
-        }
+        // Called every frame
     }
+}
+```
 
 ### Binding manually
 
