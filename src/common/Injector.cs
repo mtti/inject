@@ -109,12 +109,17 @@ namespace mtti.Inject
         private List<IUpdate> _updateables = new List<IUpdate>();
 
         /// <summary>
-        /// The type of the attribute used to find inject methods. This is changeable to allow
+        /// The type of the attribute used to find inject targets. This is changeable to allow
         /// <see cref="mtti.Inject.UnityEditorInjector"/> to inject dependencies inside the Unity
         /// editor using its own <see cref="mtti.Inject.InjectInEditorAttribute"/> rather than the
         /// default <see cref="mtti.Inject.InjectAttribute"/>.
         /// </summary>
         private Type _attributeType = typeof(InjectAttribute);
+
+        /// <summary>
+        /// The type of the attribute used to find optional inject targets.
+        /// </summary>
+        private Type _optionalAttributeType = typeof(InjectOptionalAttribute);
 
         /// <summary>
         /// Stores the injectable dependencies.
@@ -141,6 +146,12 @@ namespace mtti.Inject
             = new Dictionary<Type, List<FieldInfo>>();
 
         /// <summary>
+        /// Caches optionally injectable fields.
+        /// </summary>
+        private Dictionary<Type, List<FieldInfo>> _optionalFieldCache
+            = new Dictionary<Type, List<FieldInfo>>();
+
+        /// <summary>
         /// Caches injectable methods per type.
         /// </summary>
         private Dictionary<Type, List<MethodInfo>> _methodCache
@@ -158,12 +169,12 @@ namespace mtti.Inject
         /// </summary>
         public Injector()
         {
-            Initialize(typeof(InjectAttribute));
+            Initialize(typeof(InjectAttribute), typeof(InjectOptionalAttribute));
         }
 
-        protected Injector(Type attributeType)
+        protected Injector(Type attributeType, Type optionalAttributeType)
         {
-            Initialize(attributeType);
+            Initialize(attributeType, optionalAttributeType);
         }
 
         /// <summary>
@@ -206,18 +217,28 @@ namespace mtti.Inject
         }
 
         /// <summary>
-        /// Retrieve a dependency by its type. The generic version.
+        /// Retrieve a dependency by its contract type. The generic version.
         /// </summary>
-        /// <typeparam name="T">The type of the dependency, typically an interface.</typeparam>
+        /// <typeparam name="T">The dependency's contract type, typically an interface.</typeparam>
         public T Get<T>() where T : class
         {
             return Get(typeof(T)) as T;
         }
 
         /// <summary>
-        /// Get the specified type. The non-generic version.
+        /// Retrieve a dependency by its contract type. If the dependency is unmet, <c>null</c>
+        /// is returned instead of throwing an exception. The generic version.
         /// </summary>
-        /// <param name="type">The type of the dependency, typically and interface.</param>
+        /// <typeparam name="T">The dependency's contract type, typically an interface.</typeparam>
+        public T GetOptional<T>() where T : class
+        {
+            return GetOptional(typeof(T)) as T;
+        }
+
+        /// <summary>
+        /// Retrieve a dependency by its contract type. The non-generic version.
+        /// </summary>
+        /// <param name="type">The dependency's contract type, typically an interface.</param>
         public object Get(Type type)
         {
             if (_dependencies.ContainsKey(type))
@@ -239,6 +260,24 @@ namespace mtti.Inject
                 throw new DependencyInjectionException(string.Format(
                         "Unmet dependency: {0}.", type.ToString()));
             }
+        }
+
+        /// <summary>
+        /// Retrieve a dependency by its contract type. If the dependency is unmet, <c>null</c>
+        /// is returned instead of throwing an exception. The non-generic version.
+        /// </summary>
+        /// <param name="type">The dependency's contract type, typically an interface.</param>
+        public object GetOptional(Type type)
+        {
+            if (_dependencies.ContainsKey(type))
+            {
+                return _dependencies[type];
+            }
+            else if (_lazyFactories.ContainsKey(type))
+            {
+                return InitializeLazy(type);
+            }
+            return null;
         }
 
         /// <summary>
@@ -290,9 +329,10 @@ namespace mtti.Inject
             }
         }
 
-        private void Initialize(Type attributeType)
+        private void Initialize(Type attributeType, Type optionalAttributeType)
         {
             _attributeType = attributeType;
+            _optionalAttributeType = optionalAttributeType;
             _dependencies[typeof(Injector)] = this;
         }
 
@@ -317,14 +357,17 @@ namespace mtti.Inject
         private void InjectFields(object target, Type type)
         {
             List<FieldInfo> cachedFields = null;
+            List<FieldInfo> optionalCachedFields = null;
 
             if (_fieldCache.ContainsKey(type))
             {
                 cachedFields = _fieldCache[type];
+                optionalCachedFields = _optionalFieldCache[type];
             }
             else
             {
                 cachedFields = new List<FieldInfo>();
+                optionalCachedFields = new List<FieldInfo>();
 
                 var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public
                     | BindingFlags.NonPublic);
@@ -334,20 +377,37 @@ namespace mtti.Inject
                         = Attribute.GetCustomAttribute(fields[i], _attributeType, true);
                     if (attribute != null)
                     {
-                        AddRelationship(fields[i].FieldType, type);
                         cachedFields.Add(fields[i]);
+                    }
+
+                    var optionalAttribute
+                        = Attribute.GetCustomAttribute(fields[i], _optionalAttributeType, true);
+                    if (optionalAttribute != null)
+                    {
+                        optionalCachedFields.Add(fields[i]);
+                    }
+
+                    if (attribute != null || optionalAttribute != null)
+                    {
+                        AddRelationship(fields[i].FieldType, type);
                     }
                 }
                 _fieldCache[type] = cachedFields;
             }
 
-            int count = cachedFields.Count;
-            if (count > 0)
+            for (int i = 0, count = cachedFields.Count; i < count; i++)
             {
-                for (int i = 0; i < count; i++)
+                FieldInfo field = cachedFields[i];
+                field.SetValue(target, Get(field.FieldType));
+            }
+
+            for (int i = 0, count = optionalCachedFields.Count; i < count; i++)
+            {
+                FieldInfo field = optionalCachedFields[i];
+                object dependency = GetOptional(field.FieldType);
+                if (dependency != null)
                 {
-                    var field = cachedFields[i];
-                    field.SetValue(target, Get(field.FieldType));
+                    field.SetValue(target, dependency);
                 }
             }
         }
@@ -421,6 +481,7 @@ namespace mtti.Inject
         private void ClearCaches(Type targetType)
         {
             _fieldCache.Remove(targetType);
+            _optionalFieldCache.Remove(targetType);
             _methodCache.Remove(targetType);
             _argumentCache.Remove(targetType);
         }

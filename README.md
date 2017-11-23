@@ -45,7 +45,7 @@ MonoBehaviours and other services get dependencies injected directly into any fi
     public class ExampleScript : MonoBehaviour
     {
         [Inject]
-        private ExampleService exampleService = null;
+        private ExampleService _exampleService;
     }
 
 Method injection is also supported:
@@ -58,12 +58,12 @@ Method injection is also supported:
 
     public class ExampleScript : MonoBehaviour
     {
-        private ExampleService exampleService = null;
+        private ExampleService _exampleService;
 
         [Inject]
         private OnInject(ExampleService exampleService)
         {
-            this.exampleService = exampleService;
+            _exampleService = exampleService;
         }
     }
 
@@ -77,11 +77,36 @@ The injection method gets called after field injection even if it has no paramet
 
     public class ExampleScript : MonoBehaviour
     {
-        [Inject] private ExampleService exampleService = null;
+        [Inject]
+        private ExampleService _exampleService;
 
         private OnInject()
         {
             this.gameObject.SetActive(true);
+        }
+    }
+
+### Optional dependencies
+
+Normally, the `[Inject]` attribute throws an exception when the dependency is unmet. If this is undesirable, `[InjectOptional]` instead leaves the value of the field untouched and doesn't throw an exeception.
+
+    // ExampleScript.cs
+
+    using System;
+    using UnityEngine;
+    using mtti.Inject;
+
+    public class ExampleScript : MonoBehaviour
+    {
+        [InjectOptional]
+        private ExampleService _exampleService;
+
+        private OnInject()
+        {
+            if (_exampleService != null)
+            {
+                this.gameObject.SetActive(true);
+            }
         }
     }
 
@@ -97,18 +122,18 @@ The injector is itself available as a service called `UnityInjector`. After you'
 
     public class ExampleSpawner : MonoBehaviour
     {
-        public GameObject enemyPrefab = null;
+        public GameObject EnemyPrefab;
 
         [Inject]
-        private UnityInjector injector = null;
+        private UnityInjector _injector;
 
         [Inject]
-        private ExampleService exampleService = null;
+        private ExampleService _exampleService;
 
         public void SpawnNewEnemy()
         {
-            var obj = (GameObject)Instantiate(this.enemyPrefab);
-            this.injector.Inject(obj);
+            var obj = (GameObject)Instantiate(EnemyPrefab);
+            _injector.Inject(obj);
             return obj;
         }
     }
@@ -146,7 +171,7 @@ ExampleService could be written as:
         }
     }
 
-After which it can be required using the interface:
+After which it can be injected using the interface:
 
     // ExampleScript.cs
 
@@ -156,12 +181,12 @@ After which it can be required using the interface:
 
     public class ExampleScript : MonoBehaviour
     {
-        private IExampleService exampleService = null;
+        private IExampleService _exampleService;
 
         [Inject]
         private void OnInject(IExampleService exampleService)
         {
-            this.exampleService = exampleService;
+            _exampleService = exampleService;
         }
     }
 

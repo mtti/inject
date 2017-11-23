@@ -52,6 +52,11 @@ namespace mtti.Inject
         }
     }
 
+    public interface INonExistentService
+    {
+        int Multiply(int a, int b);
+    }
+
     public class FieldInjectReceiver
     {
         public IFakeService PrivateFakeService
@@ -62,6 +67,14 @@ namespace mtti.Inject
             }
         }
 
+        public IFakeService OptionalPrivateFakeService
+        {
+            get
+            {
+                return _optionalPrivateFakeService;
+            }
+        }
+
         [Inject]
         public IFakeService PublicFakeService;
 
@@ -69,7 +82,10 @@ namespace mtti.Inject
         public IAnotherFakeService PublicAnotherFakeService;
 
         [Inject]
-        private IFakeService _privateFakeService = null;
+        private IFakeService _privateFakeService;
+
+        [InjectOptional]
+        private IFakeService _optionalPrivateFakeService;
     }
 
     public class MethodInjectReceiver
@@ -113,6 +129,12 @@ namespace mtti.Inject
         }
 
         [Test]
+        public void GetOptionalReturnsNullOnNonExistentService()
+        {
+            Assert.IsNull(_injector.GetOptional<INonExistentService>());
+        }
+
+        [Test]
         public void InjectFields()
         {
             var receiver = new FieldInjectReceiver();
@@ -121,6 +143,7 @@ namespace mtti.Inject
             Assert.AreSame(_fakeService, receiver.PublicFakeService);
             Assert.AreSame(_anotherFakeService, receiver.PublicAnotherFakeService);
             Assert.AreSame(_fakeService, receiver.PrivateFakeService);
+            Assert.AreSame(_fakeService, receiver.OptionalPrivateFakeService);
         }
 
         [Test]

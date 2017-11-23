@@ -30,7 +30,8 @@ namespace mtti.Inject
 		/// <summary>
 		/// Initializes a new instance of the <see cref="mtti.Inject.Unity.UnityInjector"/> class.
 		/// </summary>
-		public UnityEditorInjector() : base(typeof(InjectInEditorAttribute))
+		public UnityEditorInjector() : base(typeof(InjectInEditorAttribute),
+            typeof(InjectOptionalInEditorAttribute))
 		{
 			BindLazyFromCurrentAppDomain();
 		}

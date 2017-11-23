@@ -41,7 +41,8 @@ namespace mtti.Inject
             Initialize();
         }
 
-        protected UnityInjector(Type attributeType) : base(attributeType)
+        protected UnityInjector(Type attributeType, Type optionalAttributeType)
+            : base(attributeType, optionalAttributeType)
         {
             Initialize();
         }
