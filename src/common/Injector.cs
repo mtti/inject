@@ -30,17 +30,28 @@ namespace mtti.Inject
         /// </summary>
         public static void FindAllTypesWithAttribute(Type attributeType, List<Type> result)
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             for (int i = 0; i < assemblies.Length; i++)
             {
-                var types = assemblies[i].GetTypes();
-                for (int j = 0; j < types.Length; j++)
+                try
                 {
-                    var attribute = Attribute.GetCustomAttribute(types[j], attributeType, false);
-                    if (attribute != null)
+                    var types = assemblies[i].GetTypes();
+                    for (int j = 0; j < types.Length; j++)
                     {
-                        result.Add(types[j]);
+                        var attribute = Attribute.GetCustomAttribute(types[j], attributeType, false);
+                        if (attribute != null)
+                        {
+                            result.Add(types[j]);
+                        }
                     }
+                }
+                catch (ReflectionTypeLoadException e)
+                {
+#if UNITY
+                    UnityEngine.Debug.LogErrorFormat(
+                        "ReflectionTypeLoadException with assembly {0}", assemblies[i].FullName);
+#endif
+                    throw e;
                 }
             }
         }
@@ -396,6 +407,7 @@ namespace mtti.Inject
                     }
                 }
                 _fieldCache[type] = cachedFields;
+                _optionalFieldCache[type] = optionalCachedFields;
             }
 
             for (int i = 0, count = cachedFields.Count; i < count; i++)
