@@ -106,7 +106,10 @@ namespace mtti.Inject
             }
         }
 
-        private List<IUpdate> _updateables = new List<IUpdate>();
+        /// <summary>
+        /// Listeners for the OnUpdate event.
+        /// </summary>
+        private List<IUpdateReceiver> _updateReceivers = new List<IUpdateReceiver>();
 
         /// <summary>
         /// The type of the attribute used to find inject targets. This is changeable to allow
@@ -295,13 +298,13 @@ namespace mtti.Inject
         }
 
         /// <summary>
-        /// Call OnUpdate on all bound services that implement IUpdate.
+        /// Call OnUpdate on all bound services that implement IUpdateReceiver.
         /// </summary>
         public void OnUpdate()
         {
-            for (int i = 0, count = _updateables.Count; i < count; i++)
+            for (int i = 0, count = _updateReceivers.Count; i < count; i++)
             {
-                _updateables[i].OnUpdate();
+                _updateReceivers[i].OnUpdate();
             }
         }
 
@@ -337,15 +340,15 @@ namespace mtti.Inject
         }
 
         /// <summary>
-        /// Add object to the internal list of OnUpdate listeners if it implements IUpdate.
+        /// Add object to the internal list of OnUpdate listeners if it implements IUpdateReceiver.
         /// </summary>
         /// <param name="target">Target.</param>
         private void BindUpdateable(object target)
         {
-            var updateable = target as IUpdate;
-            if (updateable != null && !_updateables.Contains(updateable))
+            var updateable = target as IUpdateReceiver;
+            if (updateable != null && !_updateReceivers.Contains(updateable))
             {
-                _updateables.Add(updateable);
+                _updateReceivers.Add(updateable);
             }
         }
 

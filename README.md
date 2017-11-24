@@ -243,7 +243,7 @@ public class MyService : MonoBehaviour
 
 ### Update a service every frame
 
-Implement the `mtti.Inject.IUpdate` interface in your service and its `OnUpdate()` method will get called every frame, just like Unity's `Update()`.
+Implement the `mtti.Inject.IUpdateReceiver` interface in your service and its `OnUpdate()` method will get called every frame, just like Unity's `Update()`.
 
 ```csharp
 // ExampleService.cs
@@ -252,7 +252,7 @@ using System;
 using mtti.Inject;
 
 [Service]
-public class ExampleService : IUpdate
+public class ExampleService : IUpdateReceiver
 {
     public void OnUpdate()
     {

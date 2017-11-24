@@ -24,7 +24,7 @@ namespace mtti.Inject
         int Sum(int a, int b);
     }
 
-    public class FakeService : IFakeService, IUpdate
+    public class FakeService : IFakeService, IUpdateReceiver
     {
         public int OnUpdateCallCount = 0;
 

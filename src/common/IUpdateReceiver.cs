@@ -18,7 +18,7 @@ using System;
 
 namespace mtti.Inject
 {
-    public interface IUpdate
+    public interface IUpdateReceiver
     {
         void OnUpdate();
     }
