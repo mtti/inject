@@ -16,11 +16,10 @@ limitations under the License.
 
 using System;
 using UnityEngine;
-using UnityEditor;
 
 namespace mtti.Inject
 {
-	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
 	public class InjectOptionalInEditorAttribute : Attribute
 	{
 		public InjectOptionalInEditorAttribute() { }

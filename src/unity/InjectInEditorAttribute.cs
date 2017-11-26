@@ -16,7 +16,6 @@ limitations under the License.
 
 using System;
 using UnityEngine;
-using UnityEditor;
 
 namespace mtti.Inject
 {
