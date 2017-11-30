@@ -22,26 +22,27 @@ using UnityEngine.SceneManagement;
 namespace mtti.Inject
 {
     /// <summary>
-    /// Unity-specific <see cref="mtti.Inject.Context"/> with additional methods for injecting
+    /// Unity-specific <see cref="mtti.Inject.Injector"/> with additional methods for injecting
     /// depdendencies into Unity scenes and GameObjects.
     /// </summary>
-    public class UnityContext : Context
+    public class UnityInjector : Injector
     {
         /// <summary>
         /// Temporarily holds the MonoBehaviours of a GameObject while dependencies are injected
         /// into them.
         /// </summary>
-        protected List<MonoBehaviour> componentBuffer = new List<MonoBehaviour>();
+        protected List<MonoBehaviour> _componentBuffer = new List<MonoBehaviour>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="mtti.Inject.UnityContext"/> class.
+        /// Initializes a new instance of the <see cref="mtti.Inject.UnityInjector"/> class.
         /// </summary>
-        public UnityContext() : base()
+        public UnityInjector() : base()
         {
             Initialize();
         }
 
-        protected UnityContext(Type attributeType) : base(attributeType)
+        protected UnityInjector(Type attributeType, Type optionalAttributeType)
+            : base(attributeType, optionalAttributeType)
         {
             Initialize();
         }
@@ -59,7 +60,7 @@ namespace mtti.Inject
             var rootGameObjects = scene.GetRootGameObjects();
             for (int i = 0; i < rootGameObjects.Length; i++)
             {
-                this.Inject(rootGameObjects[i]);
+                Inject(rootGameObjects[i]);
             }
         }
 
@@ -69,22 +70,22 @@ namespace mtti.Inject
         /// <param name="obj">Target GameObject.</param>
         public void Inject(GameObject obj)
         {
-            obj.GetComponents<MonoBehaviour>(this.componentBuffer);
-            for (int i = 0, count = this.componentBuffer.Count; i < count; i++)
+            obj.GetComponents<MonoBehaviour>(_componentBuffer);
+            for (int i = 0, count = _componentBuffer.Count; i < count; i++)
             {
-                this.Inject(this.componentBuffer[i]);
+                Inject(_componentBuffer[i]);
             }
-            this.componentBuffer.Clear();
+            _componentBuffer.Clear();
 
             for (int i = 0, count = obj.transform.childCount; i < count; i++)
             {
-                this.Inject(obj.transform.GetChild(i).gameObject);
+                Inject(obj.transform.GetChild(i).gameObject);
             }
         }
 
         private void Initialize()
         {
-            this.Bind<UnityContext>(this);
+            Bind<UnityInjector>(this);
         }
     }
 }

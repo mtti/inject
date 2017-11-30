@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2017 mtti
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,13 @@ limitations under the License.
 */
 
 using System;
+using UnityEngine;
 
 namespace mtti.Inject
 {
-    public interface IUpdate
-    {
-        void OnUpdate();
-    }
+	[AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+	public class InjectOptionalInEditorAttribute : Attribute
+	{
+		public InjectOptionalInEditorAttribute() { }
+	}
 }

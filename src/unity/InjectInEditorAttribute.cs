@@ -16,23 +16,12 @@ limitations under the License.
 
 using System;
 using UnityEngine;
-using UnityEditor;
 
 namespace mtti.Inject
 {
-	/// <summary>
-	/// A variant of <see cref="mtti.Inject.Unity.UnityContext"/> for use inside the Unity editor.
-	/// Injects dependencies to methods with <see cref="mtti.Inject.InjectInEditorAttribute"/>
-	/// instead of the usual <see cref="mtti.Inject.InjectAttribute"/>.
-	/// </summary>
-	public class UnityEditorContext : UnityContext
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = false)]
+	public class InjectInEditorAttribute : Attribute
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="mtti.Inject.Unity.UnityContext"/> class.
-		/// </summary>
-		public UnityEditorContext() : base(typeof(InjectInEditorAttribute))
-		{
-			this.BindLazyFromCurrentAppDomain();
-		}
+		public InjectInEditorAttribute() { }
 	}
 }

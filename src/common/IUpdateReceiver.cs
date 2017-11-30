@@ -18,22 +18,8 @@ using System;
 
 namespace mtti.Inject
 {
-    /// <summary>
-    /// Dependency factory that creates a dependency instance by calling its empty default
-    /// constructor.
-    /// </summary>
-    public class DefaultConstructorDependencyFactory : IDependencyFactory
+    public interface IUpdateReceiver
     {
-        private Type _type = null;
-
-        public DefaultConstructorDependencyFactory(Type type)
-        {
-            _type = type;
-        }
-
-        public object Get()
-        {
-            return Activator.CreateInstance(_type);
-        }
+        void OnUpdate();
     }
 }
