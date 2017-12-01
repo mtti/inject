@@ -4,7 +4,7 @@ Released under the Apache License, Version 2.0.
 
 ## Basic usage
 
-1. Add mttiInject into your Unity project. I do not intend to distribute a binary or unitypackage version of this library during pre-release development, so see the *Compiling* section near the end of this README for instructions on how to build it yourself.
+1. Import mttiInject into your Unity project.
 2. Add the `mtti.Inject.DependencyInjector` MonoBehaviour to an empty GameObject, or to your existing "main" GameObject if you have one.
 3. Implement services as plain C# classes (not as MonoBehaviours or ScriptableObjects) and mark them with `mtti.Inject.ServiceAttribute`.
 4. Add a method to your MonoBehaviours to receive dependencies. You can call the methods whatever you want and they don't need to be `public` either. Just mark them with `mtti.Inject.InjectAttribute`.
