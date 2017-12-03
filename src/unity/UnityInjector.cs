@@ -65,13 +65,13 @@ namespace mtti.Inject
         }
 
         /// <summary>
-        /// Inject dependencies into a Unity GameObject and all it's children.
+        /// Inject dependencies into a Unity GameObject and all its children.
         /// </summary>
         /// <param name="obj">Target GameObject.</param>
         public void Inject(GameObject obj)
         {
             obj.GetComponents<MonoBehaviour>(_componentBuffer);
-            for (int i = 0, count = _componentBuffer.Count; i < count; i++)
+            for (int i = _componentBuffer.Count - 1; i >= 0; i--)
             {
                 Inject(_componentBuffer[i]);
             }
