@@ -1,3 +1,4 @@
 dist
 *.log
 TestResult.xml
+.DS_Store
