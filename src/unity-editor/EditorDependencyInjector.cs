@@ -29,7 +29,8 @@ namespace mtti.Inject
 		static EditorDependencyInjector()
 		{
 			CheckEditMode();
-			EditorApplication.playmodeStateChanged += PlayModeStateChanged;
+			EditorApplication.playmodeStateChanged += OnPlayModeStateChanged;
+            EditorSceneManager.sceneOpened += OnSceneOpened;
 		}
 
 		public static EditorDependencyInjector Instance
@@ -46,7 +47,7 @@ namespace mtti.Inject
 			CheckEditMode();
 		}
 
-		private static void PlayModeStateChanged()
+		private static void OnPlayModeStateChanged()
 		{
 			if (EditorApplication.isPlaying)
 			{
@@ -54,6 +55,18 @@ namespace mtti.Inject
 			}
 			CheckEditMode();
 		}
+
+        private static void OnSceneOpened(Scene scene, OpenSceneMode mode)
+        {
+            if (s_instance != null && !EditorApplication.isPlaying)
+            {
+                s_instance.Injector.Inject(scene);
+            }
+            else
+            {
+                CheckEditMode();
+            }
+        }
 
 		private static void CheckEditMode()
 		{
@@ -81,7 +94,6 @@ namespace mtti.Inject
 		private void Initialize()
 		{
 			_injector = new UnityEditorInjector();
-			SceneManager.sceneLoaded += OnSceneLoaded;
 			InjectAllScenes();
 		}
 
@@ -95,11 +107,6 @@ namespace mtti.Inject
 					_injector.Inject(scene);
 				}
 			}
-		}
-
-		private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-		{
-			_injector.Inject(scene);
 		}
 	}
 }
