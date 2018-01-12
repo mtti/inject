@@ -41,6 +41,16 @@ namespace mtti.Inject
 			}
 		}
 
+        [MenuItem("Tools/mtti.Inject/Inject editor dependencies")]
+        private static void InjectEditorDependenciesNow()
+        {
+            if (s_instance == null)
+            {
+                Debug.LogError("Editor dependency injector has not been initialized");
+            }
+            s_instance.InjectAllScenes();
+        }
+
 		[UnityEditor.Callbacks.DidReloadScripts]
 		private static void DidReloadScripts()
 		{
