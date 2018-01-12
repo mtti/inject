@@ -29,3 +29,5 @@ $MCS -t:library -codepage:utf8 -sdk:2 -r:System -d:"UNITY;UNITY_EDITOR" \
     -recurse:"src/unity-editor/*.cs"
 
 cp $DIR/version.txt $DIR/dist/mtti/Inject/
+cp $DIR/README.md $DIR/dist/mtti/Inject/
+cp $DIR/LICENSE $DIR/dist/mtti/Inject/
