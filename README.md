@@ -87,6 +87,7 @@ public class ExampleScript : MonoBehaviour
     [Inject]
     private ExampleService _exampleService;
 
+    [Inject]
     private OnInject()
     {
         this.gameObject.SetActive(true);
@@ -110,6 +111,7 @@ public class ExampleScript : MonoBehaviour
     [InjectOptional]
     private ExampleService _exampleService;
 
+    [Inject]
     private OnInject()
     {
         if (_exampleService != null)
