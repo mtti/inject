@@ -15,12 +15,32 @@ limitations under the License.
 */
 
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace mtti.Inject
 {
+    public enum UnityAttributeType
+    {
+        GetComponent,
+        GetComponentInChildren
+    }
+
+    public class CachedUnityComponentReceiver
+    {
+        public FieldInfo Field;
+
+        public UnityAttributeType Type;
+
+        public CachedUnityComponentReceiver(FieldInfo field, UnityAttributeType type)
+        {
+            Field = field;
+            Type = type;
+        }
+    }
+
     /// <summary>
     /// Unity-specific <see cref="mtti.Inject.Injector"/> with additional methods for injecting
     /// depdendencies into Unity scenes and GameObjects.
@@ -32,6 +52,9 @@ namespace mtti.Inject
         /// into them.
         /// </summary>
         protected List<MonoBehaviour> _componentBuffer = new List<MonoBehaviour>();
+
+        private Dictionary<Type, List<CachedUnityComponentReceiver>> _componentReceiverCache
+            = new Dictionary<Type, List<CachedUnityComponentReceiver>>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="mtti.Inject.UnityInjector"/> class.
@@ -73,6 +96,14 @@ namespace mtti.Inject
             obj.GetComponents<MonoBehaviour>(_componentBuffer);
             for (int i = _componentBuffer.Count - 1; i >= 0; i--)
             {
+#if UNITY_EDITOR
+                if (UnityEditor.EditorApplication.isPlaying)
+                {
+                    InjectUnityComponents(_componentBuffer[i]);
+                }
+#else
+                InjectUnityComponents(_componentBuffer[i]);
+#endif
                 Inject(_componentBuffer[i]);
             }
             _componentBuffer.Clear();
@@ -86,6 +117,72 @@ namespace mtti.Inject
         private void Initialize()
         {
             Bind<UnityInjector>(this);
+        }
+
+        private void InjectUnityComponents(MonoBehaviour target)
+        {
+            List<CachedUnityComponentReceiver> cachedFields;
+            Type type = target.GetType();
+
+            if (_componentReceiverCache.ContainsKey(type))
+            {
+                cachedFields = _componentReceiverCache[type];
+            }
+            else
+            {
+                cachedFields = new List<CachedUnityComponentReceiver>();
+                FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public
+                        | BindingFlags.NonPublic);
+                for (int i = 0; i < fields.Length; i++)
+                {
+                    object attribute = Attribute.GetCustomAttribute(
+                        fields[i],
+                        typeof(GetComponentAttribute),
+                        true
+                    );
+                    if (attribute != null)
+                    {
+                        cachedFields.Add(new CachedUnityComponentReceiver(
+                            fields[i],
+                            UnityAttributeType.GetComponent
+                        ));
+                    }
+
+                    attribute = Attribute.GetCustomAttribute(
+                        fields[i],
+                        typeof(GetComponentInChildrenAttribute),
+                        true
+                    );
+                    if (attribute != null)
+                    {
+                        cachedFields.Add(new CachedUnityComponentReceiver(
+                            fields[i],
+                            UnityAttributeType.GetComponentInChildren
+                        ));
+                    }
+                }
+                _componentReceiverCache[type] = cachedFields;
+            }
+
+            for (int i = 0, count = cachedFields.Count; i < count; i++)
+            {
+                CachedUnityComponentReceiver receiver = cachedFields[i];
+                switch (receiver.Type)
+                {
+                    case UnityAttributeType.GetComponent:
+                        receiver.Field.SetValue(
+                            target,
+                            target.gameObject.GetComponent(receiver.Field.FieldType)
+                        );
+                        break;
+                    case UnityAttributeType.GetComponentInChildren:
+                        receiver.Field.SetValue(
+                            target,
+                            target.gameObject.GetComponentInChildren(receiver.Field.FieldType, true)
+                        );
+                        break;
+                }
+            }
         }
     }
 }
