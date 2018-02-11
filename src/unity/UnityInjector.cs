@@ -47,6 +47,20 @@ namespace mtti.Inject
     /// </summary>
     public class UnityInjector : Injector
     {
+        private static void CheckForComponentAttribute(
+            Type type,
+            GetComponentAttributeType typeEnum,
+            FieldInfo field,
+            List<FieldInfoAndAttributeType> cachedFields
+        )
+        {
+            object attribute = Attribute.GetCustomAttribute(field, type, true);
+            if (attribute != null)
+            {
+                cachedFields.Add(new FieldInfoAndAttributeType(field, typeEnum));
+            }
+        }
+
         /// <summary>
         /// Temporarily holds the MonoBehaviours of a GameObject while dependencies are injected
         /// into them.
@@ -135,31 +149,18 @@ namespace mtti.Inject
                         | BindingFlags.NonPublic);
                 for (int i = 0; i < fields.Length; i++)
                 {
-                    object attribute = Attribute.GetCustomAttribute(
-                        fields[i],
+                    CheckForComponentAttribute(
                         typeof(GetComponentAttribute),
-                        true
-                    );
-                    if (attribute != null)
-                    {
-                        cachedFields.Add(new FieldInfoAndAttributeType(
-                            fields[i],
-                            GetComponentAttributeType.GetComponent
-                        ));
-                    }
-
-                    attribute = Attribute.GetCustomAttribute(
+                        GetComponentAttributeType.GetComponent,
                         fields[i],
-                        typeof(GetComponentInChildrenAttribute),
-                        true
+                        cachedFields
                     );
-                    if (attribute != null)
-                    {
-                        cachedFields.Add(new FieldInfoAndAttributeType(
-                            fields[i],
-                            GetComponentAttributeType.GetComponentInChildren
-                        ));
-                    }
+                    CheckForComponentAttribute(
+                        typeof(GetComponentInChildrenAttribute),
+                        GetComponentAttributeType.GetComponentInChildren,
+                        fields[i],
+                        cachedFields
+                    );
                 }
                 _componentReceiverCache[type] = cachedFields;
             }
