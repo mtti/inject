@@ -25,7 +25,8 @@ namespace mtti.Inject
     public enum GetComponentAttributeType
     {
         GetComponent,
-        GetComponentInChildren
+        GetComponentInChildren,
+        EnsureComponent
     }
 
     public class FieldInfoAndAttributeType
@@ -161,6 +162,12 @@ namespace mtti.Inject
                         fields[i],
                         cachedFields
                     );
+                    CheckForComponentAttribute(
+                        typeof(EnsureComponentAttribute),
+                        GetComponentAttributeType.EnsureComponent,
+                        fields[i],
+                        cachedFields
+                    );
                 }
                 _componentReceiverCache[type] = cachedFields;
             }
@@ -180,6 +187,24 @@ namespace mtti.Inject
                         receiver.Field.SetValue(
                             target,
                             target.gameObject.GetComponentInChildren(receiver.Field.FieldType, true)
+                        );
+                        break;
+                    case GetComponentAttributeType.EnsureComponent:
+                        object component = target.gameObject.GetComponent(receiver.Field.FieldType);
+
+                        // As of Unity 2017.2.1f1, GetComponent doesn't actually return null, it
+                        // returns a "Unity fake null" instance of the requested type which has
+                        // overridden the Equals method. It seems that using the == operator on
+                        // a System.Object doesn't use the overridden method, however, so we do
+                        // these two checks here to be sure.
+                        if (component == null || component.Equals(null))
+                        {
+                            component = target.gameObject.AddComponent(receiver.Field.FieldType);
+                        }
+
+                        receiver.Field.SetValue(
+                            target,
+                            component
                         );
                         break;
                 }

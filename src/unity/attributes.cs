@@ -13,4 +13,13 @@ namespace mtti.Inject
 	{
 		public GetComponentInChildrenAttribute() { }
 	}
+
+    /// <summary>
+    /// Get a component if it exists in the game object and add it if it doesn't.
+    /// </summary>
+	[AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+	public class EnsureComponentAttribute : Attribute
+	{
+		public EnsureComponentAttribute() { }
+	}
 }
