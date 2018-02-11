@@ -152,6 +152,129 @@ public class ExampleSpawner : MonoBehaviour
 }
 ```
 
+## Unity component helpers
+
+mtti.Inject includes some Unity-specific helper attributes which don't have anything to do with dependency injection directly, but should help with reducing repetitive boilerplate code when finding references to GameObject components.
+
+### GetComponentAttribute
+
+`[GetComponent]` mirrors the functionality of [UnityEngine.Component.GetComponent](https://docs.unity3d.com/ScriptReference/Component.GetComponent.html).
+
+Instead of doing this:
+
+```csharp
+// ExampleScript.cs
+
+using UnityEngine;
+using mtti.Inject;
+
+public class ExampleScript : MonoBehaviour
+{
+    private MeshCollider _meshCollider;
+
+    [Inject]
+    private void OnInject()
+    {
+        _meshCollider = GetComponent<MeshCollider>();
+    }
+}
+```
+
+You can do this:
+
+```csharp
+// ExampleScript.cs
+
+using UnityEngine;
+using mtti.Inject;
+
+public class ExampleScript : MonoBehaviour
+{
+    [GetComponent]
+    private MeshCollider _meshCollider;
+}
+```
+
+### GetComponentInChildrenAttribute
+
+`[GetComponentInChildren]` mirrors the functionality of [UnityEngine.Component.GetComponentInChildren](https://docs.unity3d.com/ScriptReference/Component.GetComponentInChildren.html).
+
+Instead of doing this:
+
+```csharp
+// ExampleScript.cs
+
+using UnityEngine;
+using mtti.Inject;
+
+public class ExampleScript : MonoBehaviour
+{
+    private MeshCollider _meshCollider;
+
+    [Inject]
+    private void OnInject()
+    {
+        _meshCollider = GetComponentInChildren<MeshCollider>();
+    }
+}
+```
+
+You can do this:
+
+```csharp
+// ExampleScript.cs
+
+using UnityEngine;
+using mtti.Inject;
+
+public class ExampleScript : MonoBehaviour
+{
+    [GetComponentInChildren]
+    private MeshCollider _meshCollider;
+}
+```
+
+### EnsureComponentAttribute
+
+`[EnsureComponent]` is the same as GetComponent, except it adds the component if it doesn't already exist. Instead of doing this:
+
+```csharp
+// ExampleScript.cs
+
+using UnityEngine;
+using mtti.Inject;
+
+public class ExampleScript : MonoBehaviour
+{
+    private MeshCollider _meshCollider;
+
+    [Inject]
+    private void OnInject()
+    {
+        _meshCollider = GetComponent<MeshCollider>();
+        if (_meshCollider == null)
+        {
+            _meshCollider = this.gameObject.AddComponent<MeshCollider>();
+        }
+    }
+}
+```
+
+You can do this:
+
+```csharp
+// ExampleScript.cs
+
+using UnityEngine;
+using mtti.Inject;
+
+public class ExampleScript : MonoBehaviour
+{
+    [EnsureComponent]
+    private MeshCollider _meshCollider;
+}
+```
+
 ## Advanced usage
 
 ### Services can require other services
