@@ -35,6 +35,23 @@ namespace mtti.Inject
 
 		private bool _started = false;
 
+		private void InjectAllScenes()
+		{
+			for (int i = 0; i < SceneManager.sceneCount; i++)
+			{
+				var scene = SceneManager.GetSceneAt(i);
+				if (scene.isLoaded)
+				{
+					_injector.Inject(scene);
+				}
+				else
+				{
+					Debug.LogWarningFormat(
+                        "Not injecting dependencies to scene {0} as it's not loaded", scene.path);
+				}
+			}
+		}
+
 		private void Awake()
 		{
 			_injector = new UnityInjector();
@@ -56,23 +73,6 @@ namespace mtti.Inject
 		private void Update()
 		{
 			_injector.OnUpdate();
-		}
-
-		private void InjectAllScenes()
-		{
-			for (int i = 0; i < SceneManager.sceneCount; i++)
-			{
-				var scene = SceneManager.GetSceneAt(i);
-				if (scene.isLoaded)
-				{
-					_injector.Inject(scene);
-				}
-				else
-				{
-					Debug.LogWarningFormat(
-                        "Not injecting dependencies to scene {0} as it's not loaded", scene.path);
-				}
-			}
 		}
 
 		private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
