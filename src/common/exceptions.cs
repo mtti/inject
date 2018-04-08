@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2017 mtti
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,21 @@ namespace mtti.Inject
         }
 
         public DependencyInjectionException(string message, Exception inner) : base(message, inner)
+        {
+        }
+    }
+
+    public class UnmetDependencyException : DependencyInjectionException
+    {
+        public UnmetDependencyException()
+        {
+        }
+
+        public UnmetDependencyException(string message) : base(message)
+        {
+        }
+
+        public UnmetDependencyException(string message, Exception inner) : base(message, inner)
         {
         }
     }

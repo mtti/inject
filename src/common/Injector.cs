@@ -541,9 +541,19 @@ namespace mtti.Inject
         {
             if (!_lazyFactories.ContainsKey(type))
             {
-                throw new DependencyInjectionException("Unmet dependency: " + type.ToString());
+                throw new UnmetDependencyException(
+                    string.Format("No factory found for service {0}", type.ToString())
+                );
             }
+
             var instance = _lazyFactories[type].Get();
+            if (instance == null)
+            {
+                throw new UnmetDependencyException(
+                    string.Format("The factory for service {0} returned null", type.ToString())
+                );
+            }
+
             Bind(type, instance);
             return instance;
         }
