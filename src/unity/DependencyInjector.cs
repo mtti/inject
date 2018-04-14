@@ -23,6 +23,48 @@ namespace mtti.Inject
 {
 	public class DependencyInjector : MonoBehaviour
 	{
+        [SerializeField]
+        private bool _injectAllScenesOnStart = true;
+
+        [SerializeField]
+        private bool _injectScenesOnLoad = true;
+
+		private UnityInjector _injector;
+
+		private bool _started = false;
+
+        /// <summary>
+        /// Enable or disable automatic dependency injection into all scenes when the dependency
+        /// injector GameObject is started.
+        /// </summary>
+        public bool InjectAllScenesOnStart
+        {
+            get
+            {
+                return _injectAllScenesOnStart;
+            }
+
+            set
+            {
+                _injectAllScenesOnStart = value;
+            }
+        }
+
+        /// <summary>
+        /// Enable or disable automatic dependency injection into scenes when they're loaded.
+        /// </summary>
+        public bool InjectScenesOnLoad
+        {
+            get
+            {
+                return _injectScenesOnLoad;
+            }
+            set
+            {
+                _injectScenesOnLoad = value;
+            }
+        }
+
 		public UnityInjector Injector
 		{
 			get
@@ -30,10 +72,6 @@ namespace mtti.Inject
 				return _injector;
 			}
 		}
-
-		private UnityInjector _injector;
-
-		private bool _started = false;
 
 		private void InjectAllScenes()
 		{
@@ -60,7 +98,10 @@ namespace mtti.Inject
 
 		private void Start()
 		{
-			InjectAllScenes();
+            if (_injectAllScenesOnStart)
+            {
+			    InjectAllScenes();
+            }
 			SceneManager.sceneLoaded += OnSceneLoaded;
 			_started = true;
 		}
@@ -77,7 +118,7 @@ namespace mtti.Inject
 
 		private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
 		{
-			if (_started)
+			if (_started && _injectScenesOnLoad)
 			{
 				_injector.Inject(scene);
 			}
