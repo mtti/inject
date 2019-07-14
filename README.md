@@ -4,7 +4,7 @@ Released under the Apache License, Version 2.0.
 
 ## Basic usage
 
-1. Import mttiInject into your Unity project.
+1. Add this repository into your Unity project as a submodule: `git submodule add git@github.com:mtti/inject.git Assets/mtti/Inject`.
 2. Add the `mtti.Inject.DependencyInjector` MonoBehaviour to an empty GameObject, or to your existing "main" GameObject if you have one.
 3. Implement services as plain C# classes (not as MonoBehaviours or ScriptableObjects) and mark them with `mtti.Inject.ServiceAttribute`.
 4. Add a method to your MonoBehaviours to receive dependencies. You can call the methods whatever you want and they don't need to be `public` either. Just mark them with `mtti.Inject.InjectAttribute`.
@@ -397,18 +397,3 @@ You can create instances of mtti.Inject.Injector (the base class) and mtti.Injec
 ## Development
 
 This project is intended to be built on the command line and does not come with any solution or project files.
-
-### Compiling
-
-1. You need bash to run the build script, including on Windows.
-2. The Mono `mcs` compiler needs to be in PATH.
-3. Copy `UnityEngine.dll` and `UnityEditor.dll` from your Unity installation into the dependencies directory in this repository.
-4. Run `build.sh`.
-5. A `dist` directory will be created and will contain a `mtti` directory which you can copy into your Unity project.
-6. In Unity, adjust the import settings for `dist/mtti/Inject/UnityDll` and `dist/mtti/Inject/UnityEditorDll` so that they're included only outside the editor and only inside the editor, respectively.
-
-### Running tests
-
-1. The Mono executable `mono` needs to be in PATH.
-2. Copy `nunitlite.dll`, `nunit.framework.dll` and `NUnit.System.Linq.dll` into the `dependencies` directory.
-3. Run `test.sh`.
