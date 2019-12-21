@@ -255,6 +255,11 @@ namespace mtti.Inject
         /// <param name="type">The dependency's contract type, typically an interface.</param>
         public object Get(Type type)
         {
+            if (type == typeof(bool))
+            {
+                return true;
+            }
+
             if (_dependencies.ContainsKey(type))
             {
                 return _dependencies[type];
