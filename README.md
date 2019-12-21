@@ -393,7 +393,3 @@ You can bind dependencies manually to an injector instance. For example, you cou
 ### Creating injectors manually
 
 You can create instances of mtti.Inject.Injector (the base class) and mtti.Inject.UnityInjector (Unity-specific subclass) normally, for example when writing unit tests.
-
-## Development
-
-This project is intended to be built on the command line and does not come with any solution or project files.
