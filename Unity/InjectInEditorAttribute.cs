@@ -19,9 +19,9 @@ using UnityEngine;
 
 namespace mtti.Inject
 {
-	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = false)]
-	public class InjectInEditorAttribute : Attribute
-	{
-		public InjectInEditorAttribute() { }
-	}
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = false)]
+    public class InjectInEditorAttribute : Attribute
+    {
+        public InjectInEditorAttribute() { }
+    }
 }

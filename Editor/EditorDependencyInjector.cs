@@ -22,24 +22,24 @@ using UnityEditor.SceneManagement;
 
 namespace mtti.Inject
 {
-	public class EditorDependencyInjector
-	{
-		private static EditorDependencyInjector s_instance = null;
+    public class EditorDependencyInjector
+    {
+        private static EditorDependencyInjector s_instance = null;
 
-		static EditorDependencyInjector()
-		{
-			CheckEditMode();
-			EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+        static EditorDependencyInjector()
+        {
+            CheckEditMode();
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             EditorSceneManager.sceneOpened += OnSceneOpened;
-		}
+        }
 
-		public static EditorDependencyInjector Instance
-		{
-			get
-			{
-				return s_instance;
-			}
-		}
+        public static EditorDependencyInjector Instance
+        {
+            get
+            {
+                return s_instance;
+            }
+        }
 
         [MenuItem("Tools/mtti.Inject/Inject editor dependencies")]
         private static void InjectEditorDependenciesNow()
@@ -51,20 +51,20 @@ namespace mtti.Inject
             s_instance.InjectAllScenes();
         }
 
-		[UnityEditor.Callbacks.DidReloadScripts]
-		private static void DidReloadScripts()
-		{
-			CheckEditMode();
-		}
+        [UnityEditor.Callbacks.DidReloadScripts]
+        private static void DidReloadScripts()
+        {
+            CheckEditMode();
+        }
 
-		private static void OnPlayModeStateChanged(PlayModeStateChange state)
-		{
-			if (EditorApplication.isPlaying)
-			{
-				s_instance = null;
-			}
-			CheckEditMode();
-		}
+        private static void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (EditorApplication.isPlaying)
+            {
+                s_instance = null;
+            }
+            CheckEditMode();
+        }
 
         private static void OnSceneOpened(Scene scene, OpenSceneMode mode)
         {
@@ -78,45 +78,45 @@ namespace mtti.Inject
             }
         }
 
-		private static void CheckEditMode()
-		{
-			if (s_instance == null && !EditorApplication.isPlaying)
-			{
-				s_instance = new EditorDependencyInjector();
-				s_instance.Initialize();
-			}
-		}
+        private static void CheckEditMode()
+        {
+            if (s_instance == null && !EditorApplication.isPlaying)
+            {
+                s_instance = new EditorDependencyInjector();
+                s_instance.Initialize();
+            }
+        }
 
-		private UnityEditorInjector _injector;
+        private UnityEditorInjector _injector;
 
-		public UnityEditorInjector Injector
-		{
-			get
-			{
-				return _injector;
-			}
-		}
+        public UnityEditorInjector Injector
+        {
+            get
+            {
+                return _injector;
+            }
+        }
 
-		private EditorDependencyInjector()
-		{
-		}
+        private EditorDependencyInjector()
+        {
+        }
 
-		private void Initialize()
-		{
-			_injector = new UnityEditorInjector();
-			InjectAllScenes();
-		}
+        private void Initialize()
+        {
+            _injector = new UnityEditorInjector();
+            InjectAllScenes();
+        }
 
-		private void InjectAllScenes()
-		{
-			for (int i = 0; i < SceneManager.sceneCount; i++)
-			{
-				var scene = SceneManager.GetSceneAt(i);
-				if (scene.isLoaded)
-				{
-					_injector.Inject(scene);
-				}
-			}
-		}
-	}
+        private void InjectAllScenes()
+        {
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+                if (scene.isLoaded)
+                {
+                    _injector.Inject(scene);
+                }
+            }
+        }
+    }
 }

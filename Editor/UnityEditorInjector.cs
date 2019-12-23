@@ -20,20 +20,20 @@ using UnityEditor;
 
 namespace mtti.Inject
 {
-	/// <summary>
-	/// A variant of <see cref="mtti.Inject.Unity.UnityInjector"/> for use inside the Unity editor.
-	/// Injects dependencies to methods with <see cref="mtti.Inject.InjectInEditorAttribute"/>
-	/// instead of the usual <see cref="mtti.Inject.InjectAttribute"/>.
-	/// </summary>
-	public class UnityEditorInjector : UnityInjector
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="mtti.Inject.Unity.UnityInjector"/> class.
-		/// </summary>
-		public UnityEditorInjector() : base(typeof(InjectInEditorAttribute),
+    /// <summary>
+    /// A variant of <see cref="mtti.Inject.Unity.UnityInjector"/> for use inside the Unity editor.
+    /// Injects dependencies to methods with <see cref="mtti.Inject.InjectInEditorAttribute"/>
+    /// instead of the usual <see cref="mtti.Inject.InjectAttribute"/>.
+    /// </summary>
+    public class UnityEditorInjector : UnityInjector
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="mtti.Inject.Unity.UnityInjector"/> class.
+        /// </summary>
+        public UnityEditorInjector() : base(typeof(InjectInEditorAttribute),
             typeof(InjectOptionalInEditorAttribute))
-		{
-			BindLazyFromCurrentAppDomain();
-		}
-	}
+        {
+            BindLazyFromCurrentAppDomain();
+        }
+    }
 }

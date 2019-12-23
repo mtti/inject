@@ -21,17 +21,17 @@ using UnityEngine.SceneManagement;
 
 namespace mtti.Inject
 {
-	public class DependencyInjector : MonoBehaviour
-	{
+    public class DependencyInjector : MonoBehaviour
+    {
         [SerializeField]
         private bool _injectAllScenesOnStart = true;
 
         [SerializeField]
         private bool _injectScenesOnLoad = true;
 
-		private UnityInjector _injector;
+        private UnityInjector _injector;
 
-		private bool _started = false;
+        private bool _started = false;
 
         /// <summary>
         /// Enable or disable automatic dependency injection into all scenes when the dependency
@@ -65,63 +65,63 @@ namespace mtti.Inject
             }
         }
 
-		public UnityInjector Injector
-		{
-			get
-			{
-				return _injector;
-			}
-		}
+        public UnityInjector Injector
+        {
+            get
+            {
+                return _injector;
+            }
+        }
 
-		private void InjectAllScenes()
-		{
-			for (int i = 0; i < SceneManager.sceneCount; i++)
-			{
-				var scene = SceneManager.GetSceneAt(i);
-				if (scene.isLoaded)
-				{
-					_injector.Inject(scene);
-				}
-				else
-				{
-					Debug.LogWarningFormat(
+        private void InjectAllScenes()
+        {
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+                if (scene.isLoaded)
+                {
+                    _injector.Inject(scene);
+                }
+                else
+                {
+                    Debug.LogWarningFormat(
                         "Not injecting dependencies to scene {0} as it's not loaded", scene.path);
-				}
-			}
-		}
+                }
+            }
+        }
 
-		private void Awake()
-		{
-			_injector = new UnityInjector();
-			_injector.BindLazyFromCurrentAppDomain();
-		}
+        private void Awake()
+        {
+            _injector = new UnityInjector();
+            _injector.BindLazyFromCurrentAppDomain();
+        }
 
-		private void Start()
-		{
+        private void Start()
+        {
             if (_injectAllScenesOnStart)
             {
-			    InjectAllScenes();
+                InjectAllScenes();
             }
-			SceneManager.sceneLoaded += OnSceneLoaded;
-			_started = true;
-		}
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            _started = true;
+        }
 
-		private void OnDestroy()
-		{
-			SceneManager.sceneLoaded -= OnSceneLoaded;
-		}
+        private void OnDestroy()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
 
-		private void Update()
-		{
-			_injector.OnUpdate();
-		}
+        private void Update()
+        {
+            _injector.OnUpdate();
+        }
 
-		private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-		{
-			if (_started && _injectScenesOnLoad)
-			{
-				_injector.Inject(scene);
-			}
-		}
-	}
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (_started && _injectScenesOnLoad)
+            {
+                _injector.Inject(scene);
+            }
+        }
+    }
 }
