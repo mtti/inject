@@ -76,16 +76,16 @@ namespace mtti.Inject
         }
 
         [Inject]
-        public IFakeService PublicFakeService;
+        public IFakeService PublicFakeService = null;
 
         [Inject]
-        public IAnotherFakeService PublicAnotherFakeService;
+        public IAnotherFakeService PublicAnotherFakeService = null;
 
         [Inject]
-        private IFakeService _privateFakeService;
+        private IFakeService _privateFakeService = null;
 
         [InjectOptional]
-        private IFakeService _optionalPrivateFakeService;
+        private IFakeService _optionalPrivateFakeService = null;
     }
 
     public class MethodInjectReceiver
