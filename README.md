@@ -38,7 +38,7 @@ public class ExampleService
 
 ### Receiving dependencies
 
-MonoBehaviours and other services get dependencies injected directly into any field marked with the `Inject` attribute:
+MonoBehaviours and other services get dependencies injected directly into any fields marked with the `[Inject]` attribute:
 
 ```csharp
 // ExampleScript.cs
@@ -128,9 +128,34 @@ public class ExampleScript : MonoBehaviour
 
 The *Dependency Injector* automatically injects dependencies into all GameObjects in the all loaded scenes when it starts and into all scenes that are loaded after the EntryPoint was created, but it can't magically detect when new GameObjects are created programmatically.
 
-Therefore, you need to manually inject dependencies into new GameObjects you create. You do so using an instance of the Injector class. In a Unity project, one is created automatically by the *Dependency Injector* component.
+Therefore, you need to manually inject dependencies into new GameObjects you create. You do so using the overloaded `Inject` method of the `Injector` or `UnityInjector` classes.
 
-The injector is itself available as a service called `UnityInjector`. After you've created a new GameObject, simply call `injector.Inject(newGameObject)` to inject dependencies into it.
+## Special values
+
+### Boolean value
+
+Any `bool` field with the `[Inject]` attribute is always injected the value `true`. You can use this to easily check if dependency injection has taken place.
+
+```csharp
+// ExampleScript.cs
+
+public class ExampleScript : MonoBehaviour
+{
+    [Inject]
+    private bool _wasInjected;
+
+    private void Update()
+    {
+        if (!_wasInjected_) return;
+
+        // ...
+    }
+}
+```
+
+### UnityInjector
+
+When using UnityInjector, the injector itself can be injected as a dependency.
 
 ```csharp
 // ExampleSpawner.cs
@@ -141,9 +166,6 @@ public class ExampleSpawner : MonoBehaviour
 
     [Inject]
     private UnityInjector _injector;
-
-    [Inject]
-    private ExampleService _exampleService;
 
     public void SpawnNewEnemy()
     {
@@ -368,30 +390,10 @@ public class MyService : MonoBehaviour
 }
 ```
 
-### Update a service every frame
-
-Implement the `mtti.Inject.IUpdateReceiver` interface in your service and its `OnUpdate()` method will get called every frame, just like Unity's `Update()`.
-
-```csharp
-// ExampleService.cs
-
-using System;
-using mtti.Inject;
-
-[Service]
-public class ExampleService : IUpdateReceiver
-{
-    public void OnUpdate()
-    {
-        // Called every frame
-    }
-}
-```
-
 ### Binding manually
 
 You can bind dependencies manually to an injector instance. For example, you could do `injector.Bind<IExampleService>(new ExampleService());`.
 
 ### Creating injectors manually
 
-You can create instances of mtti.Inject.Injector (the base class) and mtti.Inject.UnityInjector (Unity-specific subclass) normally, for example when writing unit tests.
+You can create instances of mtti.Inject.Injector (the base class) and mtti.Inject.UnityInjector (Unity-specific subclass) normally, for example when writing unit tests or just to have full control over when and how dependencies are injected.

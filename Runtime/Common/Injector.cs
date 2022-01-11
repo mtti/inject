@@ -118,11 +118,6 @@ namespace mtti.Inject
         }
 
         /// <summary>
-        /// Listeners for the OnUpdate event.
-        /// </summary>
-        private List<IUpdateReceiver> _updateReceivers = new List<IUpdateReceiver>();
-
-        /// <summary>
         /// The type of the attribute used to find inject targets. This is changeable to allow
         /// <see cref="mtti.Inject.UnityEditorInjector"/> to inject dependencies inside the Unity
         /// editor using its own <see cref="mtti.Inject.InjectInEditorAttribute"/> rather than the
@@ -225,8 +220,6 @@ namespace mtti.Inject
             _dependencies[type] = obj;
             Inject(obj);
 
-            BindUpdateable(obj);
-
             return this;
         }
 
@@ -314,17 +307,6 @@ namespace mtti.Inject
         }
 
         /// <summary>
-        /// Call OnUpdate on all bound services that implement IUpdateReceiver.
-        /// </summary>
-        public void OnUpdate()
-        {
-            for (int i = 0, count = _updateReceivers.Count; i < count; i++)
-            {
-                _updateReceivers[i].OnUpdate();
-            }
-        }
-
-        /// <summary>
         /// Finds injectables marked with <see cref="mtti.Inject.ServiceAttribute"/> and binds them
         /// as lazy dependencies.
         /// </summary>
@@ -353,19 +335,6 @@ namespace mtti.Inject
             _attributeType = attributeType;
             _optionalAttributeType = optionalAttributeType;
             _dependencies[typeof(Injector)] = this;
-        }
-
-        /// <summary>
-        /// Add object to the internal list of OnUpdate listeners if it implements IUpdateReceiver.
-        /// </summary>
-        /// <param name="target">Target.</param>
-        private void BindUpdateable(object target)
-        {
-            var updateable = target as IUpdateReceiver;
-            if (updateable != null && !_updateReceivers.Contains(updateable))
-            {
-                _updateReceivers.Add(updateable);
-            }
         }
 
         /// <summary>

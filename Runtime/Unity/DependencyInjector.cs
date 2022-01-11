@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -109,11 +107,6 @@ namespace mtti.Inject
         private void OnDestroy()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
-        }
-
-        private void Update()
-        {
-            _injector.OnUpdate();
         }
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

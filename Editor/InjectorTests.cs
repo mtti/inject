@@ -24,7 +24,7 @@ namespace mtti.Inject
         int Sum(int a, int b);
     }
 
-    public class FakeService : IFakeService, IUpdateReceiver
+    public class FakeService : IFakeService
     {
         public int OnUpdateCallCount = 0;
 
@@ -163,13 +163,6 @@ namespace mtti.Inject
             var injector = new Injector();
             injector.Bind<IFakeService>(_fakeService);
             Assert.Throws<DependencyInjectionException>(() => { injector.Inject(receiver); });
-        }
-
-        [Test]
-        public void CallOnUpdate()
-        {
-            _injector.OnUpdate();
-            Assert.AreEqual(1, _fakeService.OnUpdateCallCount);
         }
     }
 }
