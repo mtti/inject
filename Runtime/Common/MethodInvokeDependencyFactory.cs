@@ -15,25 +15,32 @@ limitations under the License.
 */
 
 using System;
-using UnityEngine;
-using UnityEditor;
+using System.Reflection;
 
 namespace mtti.Inject
 {
     /// <summary>
-    /// A variant of <see cref="mtti.Inject.Unity.UnityInjector"/> for use inside the Unity editor.
-    /// Injects dependencies to methods with <see cref="mtti.Inject.InjectInEditorAttribute"/>
-    /// instead of the usual <see cref="mtti.Inject.InjectAttribute"/>.
+    /// Dependency factory that creates a dependency instance by calling a method.
     /// </summary>
-    public class UnityEditorInjector : UnityInjector
+    public class MethodInvokeDependencyFactory : IDependencyFactory
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="mtti.Inject.Unity.UnityInjector"/> class.
-        /// </summary>
-        public UnityEditorInjector() : base(typeof(InjectInEditorAttribute),
-            typeof(InjectOptionalInEditorAttribute))
+        private MethodInfo _method = null;
+
+        private object _instance = null;
+
+        private object[] _parameters = null;
+
+        public MethodInvokeDependencyFactory(MethodInfo method, object instance,
+            object[] parameters)
         {
-            BindLazyFromCurrentAppDomain();
+            _method = method;
+            _instance = instance;
+            _parameters = parameters;
+        }
+
+        public object Get()
+        {
+            return _method.Invoke(_instance, _parameters);
         }
     }
 }

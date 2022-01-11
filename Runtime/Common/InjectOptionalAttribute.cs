@@ -1,5 +1,5 @@
-﻿/*
-Copyright 2017 mtti
+/*
+Copyright 2017-2022 Matti Hiltunen
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,13 +15,14 @@ limitations under the License.
 */
 
 using System;
-using UnityEngine;
 
 namespace mtti.Inject
 {
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Method, AllowMultiple = false)]
-    public class InjectInEditorAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    public class InjectOptionalAttribute : Attribute
     {
-        public InjectInEditorAttribute() { }
+        public InjectOptionalAttribute()
+        {
+        }
     }
 }

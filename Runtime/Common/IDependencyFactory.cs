@@ -1,5 +1,5 @@
-/*
-Copyright 2017 mtti
+﻿/*
+Copyright 2017-2022 Matti Hiltunen
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,11 +18,8 @@ using System;
 
 namespace mtti.Inject
 {
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class InjectOptionalAttribute : Attribute
+    public interface IDependencyFactory
     {
-        public InjectOptionalAttribute()
-        {
-        }
+        object Get();
     }
 }

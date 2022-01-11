@@ -1,5 +1,5 @@
 ﻿/*
-Copyright 2017 mtti
+Copyright 2017-2022 Matti Hiltunen
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,32 +15,25 @@ limitations under the License.
 */
 
 using System;
-using System.Reflection;
 
 namespace mtti.Inject
 {
     /// <summary>
-    /// Dependency factory that creates a dependency instance by calling a method.
+    /// Dependency factory that creates a dependency instance by calling its empty default
+    /// constructor.
     /// </summary>
-    public class MethodInvokeDependencyFactory : IDependencyFactory
+    public class DefaultConstructorDependencyFactory : IDependencyFactory
     {
-        private MethodInfo _method = null;
+        private Type _type = null;
 
-        private object _instance = null;
-
-        private object[] _parameters = null;
-
-        public MethodInvokeDependencyFactory(MethodInfo method, object instance,
-            object[] parameters)
+        public DefaultConstructorDependencyFactory(Type type)
         {
-            _method = method;
-            _instance = instance;
-            _parameters = parameters;
+            _type = type;
         }
 
         public object Get()
         {
-            return _method.Invoke(_instance, _parameters);
+            return Activator.CreateInstance(_type);
         }
     }
 }

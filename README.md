@@ -1,14 +1,16 @@
+[![Made with Unity](https://img.shields.io/badge/Made%20with-Unity-333.svg?style=flat-square&logo=unity)](https://unity.com/) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg?style=flat-square)](https://github.com/mtti/inject/blob/master/LICENSE)
+
 **mtti.Inject** is a simple dependency injector for the Unity engine.
 
-Released under the Apache License, Version 2.0.
+Originally written for my personal use because I wanted to better understand how dependency injection frameworks work. Now resuming development in 2022 after a two-year hiatus. For your own projects you should consider a more established framework like [Zenject](https://github.com/modesttree/Zenject).
 
 ## Basic usage
 
-1. Add this repository into your Unity project as a submodule: `git submodule add git@github.com:mtti/inject.git Assets/mtti/Inject`.
+1. No UPM package is currently available, so you have to add this repository into your Unity project as a package: `git submodule add git@github.com:mtti/inject.git Packages/com.mattihiltunen.inject`.
 2. Add the `mtti.Inject.DependencyInjector` MonoBehaviour to an empty GameObject, or to your existing "main" GameObject if you have one.
 3. Implement services as plain C# classes (not as MonoBehaviours or ScriptableObjects) and mark them with `mtti.Inject.ServiceAttribute`.
 4. Add a method to your MonoBehaviours to receive dependencies. You can call the methods whatever you want and they don't need to be `public` either. Just mark them with `mtti.Inject.InjectAttribute`.
-5. If you create new GameObjets programmatically (from prefabs with `Instantiate`, for example) inject dependencies into them manually.
+5. If you create new GameObjects programmatically (from prefabs with `Instantiate`, for example) inject dependencies into them manually.
 
 ### Adding the dependency injector component
 
