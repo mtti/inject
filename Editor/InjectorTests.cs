@@ -88,6 +88,34 @@ namespace mtti.Inject
         private IFakeService _optionalPrivateFakeService = null;
     }
 
+    public class SingleFieldInjectReceiver
+    {
+        [Inject]
+        private IFakeService _privateFakeService = null;
+
+        public IFakeService PrivateFakeService
+        {
+            get
+            {
+                return _privateFakeService;
+            }
+        }
+    }
+
+    public class OptionalFieldInjectReceiver
+    {
+        [InjectOptional]
+        private IFakeService _optionalPrivateFakeService = null;
+
+        public IFakeService OptionalPrivateFakeService
+        {
+            get
+            {
+                return _optionalPrivateFakeService;
+            }
+        }
+    }
+
     public class MethodInjectReceiver
     {
         public IFakeService FakeService;
@@ -162,6 +190,42 @@ namespace mtti.Inject
             var receiver = new MethodInjectReceiver();
             var injector = new Injector();
             injector.Bind<IFakeService>(_fakeService);
+            Assert.Throws<DependencyInjectionException>(() => { injector.Inject(receiver); });
+        }
+
+        [Test]
+        public void SetOptionalToNullAfterUnbind()
+        {
+            var fakeService = new FakeService();
+
+            var injector = new Injector();
+            var receiver = new OptionalFieldInjectReceiver();
+
+            injector.Bind<IFakeService>(fakeService);
+            injector.Inject(receiver);
+
+            Assert.AreSame(fakeService, receiver.OptionalPrivateFakeService);
+
+            injector.Unbind<IFakeService>();
+            injector.Inject(receiver);
+
+            Assert.AreSame(null, receiver.OptionalPrivateFakeService);
+        }
+
+        [Test]
+        public void ThrowAfterUnbind()
+        {
+            var fakeService = new FakeService();
+
+            var injector = new Injector();
+            var receiver = new SingleFieldInjectReceiver();
+
+            injector.Bind<IFakeService>(fakeService);
+            injector.Inject(receiver);
+
+            Assert.AreSame(fakeService, receiver.PrivateFakeService);
+
+            injector.Unbind<IFakeService>();
             Assert.Throws<DependencyInjectionException>(() => { injector.Inject(receiver); });
         }
     }

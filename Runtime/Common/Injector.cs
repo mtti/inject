@@ -142,7 +142,8 @@ namespace mtti.Inject
             = new Dictionary<Type, IDependencyFactory>();
 
         /// <summary>
-        /// Indexes dependent types by dependency type.
+        /// Indexes dependent types by dependency type. Each value is a set
+        /// of types that depend on the key.
         /// </summary>
         private Dictionary<Type, HashSet<Type>> _relationships
             = new Dictionary<Type, HashSet<Type>>();
@@ -221,6 +222,23 @@ namespace mtti.Inject
             Inject(obj);
 
             return this;
+        }
+
+        /// <summary>
+        /// Remove a previously added dependency.
+        /// </summary>
+        public void Unbind<T>() where T : class
+        {
+            Unbind(typeof(T));
+        }
+
+        /// <summary>
+        /// Remove a previously added dependency.
+        /// </summary>
+        public void Unbind(Type type)
+        {
+            if (!_dependencies.ContainsKey(type)) return;
+            _dependencies.Remove(type);
         }
 
         /// <summary>
@@ -341,7 +359,7 @@ namespace mtti.Inject
         /// Inject dependencies into an object's fields that have the inject attribute.
         /// </summary>
         /// <param name="target">Target object.</param>
-        /// <param name="type">Type object's type.</param>
+        /// <param name="type">Target object's type.</param>
         private void InjectFields(object target, Type type)
         {
             List<FieldInfo> cachedFields = null;
@@ -394,10 +412,7 @@ namespace mtti.Inject
             {
                 FieldInfo field = optionalCachedFields[i];
                 object dependency = GetOptional(field.FieldType);
-                if (dependency != null)
-                {
-                    field.SetValue(target, dependency);
-                }
+                field.SetValue(target, dependency);
             }
         }
 
