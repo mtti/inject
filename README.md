@@ -397,3 +397,41 @@ You can bind dependencies manually to an injector instance. For example, you cou
 ### Creating injectors manually
 
 You can create instances of mtti.Inject.Injector (the base class) and mtti.Inject.UnityInjector (Unity-specific subclass) normally, for example when writing unit tests or just to have full control over when and how dependencies are injected.
+
+### Invoking methods directly
+
+The `Injector.Invoke()` overloads allow you to dynamically invoke arbitrary
+static and instance methods with a combination of manually set and automatically
+injected parameters.
+
+This gives up compile-time type safety, uses reflection and allocates
+a bit of garbage on each call so use sparingly.
+
+```csharp
+// SomeClass.cs
+
+using System;
+using mtti.Inject;
+
+public class SomeClass
+{
+    public int SomeMethod(int a, int b, IExampleService example)
+    {
+        // ...
+
+        return a + b;
+    }
+}
+
+// Somewhere else
+
+var someInstance = new SomeClass();
+var result = injector.Invoke<int>(
+    someInstance,
+    "SomeMethod",
+    new List<object>(new object[] { 23, 42 })
+);
+
+// result = 23 + 42
+
+```

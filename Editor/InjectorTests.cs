@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace mtti.Inject
@@ -130,6 +131,41 @@ namespace mtti.Inject
         }
     }
 
+    public class DelegateInjectReceiver
+    {
+        public static List<object> ReceivedStaticParams = new List<object>();
+
+        public static int StaticMethod(
+            string message,
+            int number,
+            IFakeService fakeService,
+            IAnotherFakeService anotherFakeService
+        )
+        {
+            ReceivedStaticParams.Add(message);
+            ReceivedStaticParams.Add(number);
+            ReceivedStaticParams.Add(fakeService);
+            ReceivedStaticParams.Add(anotherFakeService);
+            return number;
+        }
+
+        public List<object> ReceivedInstanceParams = new List<object>();
+
+        public int InstanceMethod(
+            string message,
+            int number,
+            IFakeService fakeService,
+            IAnotherFakeService anotherFakeService
+        )
+        {
+            ReceivedInstanceParams.Add(message);
+            ReceivedInstanceParams.Add(number);
+            ReceivedInstanceParams.Add(fakeService);
+            ReceivedInstanceParams.Add(anotherFakeService);
+            return number;
+        }
+    }
+
     [TestFixture]
     public class InjectorTests
     {
@@ -226,7 +262,58 @@ namespace mtti.Inject
             Assert.AreSame(fakeService, receiver.PrivateFakeService);
 
             injector.Unbind<IFakeService>();
-            Assert.Throws<DependencyInjectionException>(() => { injector.Inject(receiver); });
+            Assert.Throws<DependencyInjectionException>(
+                () => { injector.Inject(receiver); }
+            );
+        }
+
+        [Test]
+        public void TestInstanceInvoke()
+        {
+            var receiver = new DelegateInjectReceiver();
+
+            var result = _injector.Invoke<int>(
+                receiver,
+                "InstanceMethod",
+                new List<object>(new object[] { "hello", 42 })
+            );
+
+            Assert.AreEqual(42, result);
+            Assert.AreEqual("hello", receiver.ReceivedInstanceParams[0]);
+            Assert.AreEqual(42, receiver.ReceivedInstanceParams[1]);
+            Assert.AreSame(_fakeService, receiver.ReceivedInstanceParams[2]);
+            Assert.AreSame(
+                _anotherFakeService,
+                receiver.ReceivedInstanceParams[3]
+            );
+        }
+
+        [Test]
+        public void TestStaticInvoke()
+        {
+            var result = _injector.Invoke<int>(
+                typeof(DelegateInjectReceiver),
+                "StaticMethod",
+                new List<object>(new object[] { "hello", 42 })
+            );
+
+            Assert.AreEqual(42, result);
+            Assert.AreEqual(
+                "hello",
+                DelegateInjectReceiver.ReceivedStaticParams[0]
+            );
+            Assert.AreEqual(
+                42,
+                DelegateInjectReceiver.ReceivedStaticParams[1]
+            );
+            Assert.AreSame(
+                _fakeService,
+                DelegateInjectReceiver.ReceivedStaticParams[2]
+            );
+            Assert.AreSame(
+                _anotherFakeService,
+                DelegateInjectReceiver.ReceivedStaticParams[3]
+            );
         }
     }
 }

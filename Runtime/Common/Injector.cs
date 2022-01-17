@@ -325,6 +325,105 @@ namespace mtti.Inject
         }
 
         /// <summary>
+        /// Invoke a delegate with optional parameters. Any delegate parameters
+        /// not satisfied by <c>prefixParams</c> will be injected.
+        /// </summary>
+        /// <remarks>
+        /// Uses reflection and allocates an array for the delegate parameters
+        /// every time, so use responsibly.
+        /// </remarks>
+        public object Invoke(
+            object target,
+            MethodInfo method,
+            List<object> prefixParams = null
+        )
+        {
+            var parameters = method.GetParameters();
+            var prefixParamCount = prefixParams == null ? 0 : prefixParams.Count;
+
+            if (prefixParamCount > parameters.Length)
+            {
+                throw new ArgumentException(
+                    $"Expected at most {parameters.Length} parameters",
+                    "args"
+                );
+            }
+
+            var finalArgs = new object[parameters.Length];
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                var paramType = parameters[i].ParameterType;
+
+                if (i < prefixParamCount)
+                {
+                    var argType = prefixParams[i].GetType();
+                    if (!paramType.IsAssignableFrom(argType))
+                    {
+                        throw new ArgumentException(
+                            $"{argType.Name} is not assignable to {paramType.Name}"
+                        );
+                    }
+                    finalArgs[i] = prefixParams[i];
+                }
+                else
+                {
+                    finalArgs[i] = Get(paramType);
+                }
+            }
+
+            return method.Invoke(target, finalArgs);
+        }
+
+        public TResult Invoke<TResult>(
+            object target,
+            MethodInfo method,
+            List<object> prefixParams = null
+        )
+        {
+            var returnType = typeof(TResult);
+            if (!returnType.IsAssignableFrom(method.ReturnType))
+            {
+                throw new ArgumentException($"Method returns {method.ReturnType.Name} which is not assignable to {returnType.Name}");
+            }
+
+            return (TResult)Invoke(target, method, prefixParams);
+        }
+
+        /// <summary>
+        /// Invoke a public instance method with injected parameters.
+        /// </summary>
+        public TResult Invoke<TResult>(
+            object target,
+            string methodName,
+            List<object> args = null
+        )
+        {
+            var method = target
+                .GetType()
+                .GetMethod(
+                    methodName,
+                    BindingFlags.Instance | BindingFlags.Public
+                );
+            return Invoke<TResult>(target, method, args);
+        }
+
+        /// <summary>
+        /// Invoke a public static method with injected parameters.
+        /// </summary>
+        public TResult Invoke<TResult>(
+            Type target,
+            string methodName,
+            List<object> args = null
+        )
+        {
+            var method = target.GetMethod(
+                methodName,
+                BindingFlags.Static | BindingFlags.Public
+            );
+            return Invoke<TResult>(null, method, args);
+        }
+
+        /// <summary>
         /// Finds injectables marked with <see cref="mtti.Inject.ServiceAttribute"/> and binds them
         /// as lazy dependencies.
         /// </summary>
