@@ -105,6 +105,17 @@ namespace mtti.Inject
         /// <summary>
         /// Inject dependencies into a Unity GameObject and all its children.
         /// </summary>
+        /// <param name="component">
+        ///     Any component of the target game object.
+        /// </param>
+        public void Inject(Component component)
+        {
+            Inject(component.gameObject);
+        }
+
+        /// <summary>
+        /// Inject dependencies into a Unity GameObject and all its children.
+        /// </summary>
         /// <param name="obj">Target GameObject.</param>
         public void Inject(GameObject obj)
         {
@@ -119,7 +130,7 @@ namespace mtti.Inject
 #else
                 GetUnityComponents(_componentBuffer[i]);
 #endif
-                Inject(_componentBuffer[i]);
+                Inject((object)_componentBuffer[i]);
             }
             _componentBuffer.Clear();
 
