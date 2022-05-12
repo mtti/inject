@@ -20,26 +20,6 @@ using NUnit.Framework;
 
 namespace mtti.Inject
 {
-    public interface IFakeService
-    {
-        int Sum(int a, int b);
-    }
-
-    public class FakeService : IFakeService
-    {
-        public int OnUpdateCallCount = 0;
-
-        public int Sum(int a, int b)
-        {
-            return a + b;
-        }
-
-        public void OnUpdate()
-        {
-            OnUpdateCallCount++;
-        }
-    }
-
     public interface IAnotherFakeService
     {
         int Minus(int a, int b);
@@ -166,6 +146,61 @@ namespace mtti.Inject
         }
     }
 
+    public abstract class ReceiverSuperclass
+    {
+        [Inject]
+        protected IFakeService _superFakeService;
+
+        public bool SuperMethodCalled = false;
+
+        public IFakeService SuperFakeService { get { return _superFakeService; } }
+
+        [Inject]
+        public void OnInject()
+        {
+            SuperMethodCalled = true;
+        }
+    }
+
+    public class ReceiverSubclass : ReceiverSuperclass { }
+
+    public abstract class GenericReceiverSuperclass<T>
+    {
+        public T Value;
+
+        [Inject]
+        protected IFakeService _superFakeService;
+
+        public bool SuperMethodCalled = false;
+
+        public IFakeService SuperFakeService { get { return _superFakeService; } }
+
+        [Inject]
+        public void OnInject()
+        {
+            SuperMethodCalled = true;
+        }
+    }
+
+    public class GenericReceiverSubclass : GenericReceiverSuperclass<int> { }
+
+    public abstract class ReceiverAncestor
+    {
+        [Inject]
+        protected IFakeService _ancestorService;
+
+        public IFakeService AncestorService { get { return _ancestorService; } }
+
+    }
+
+    public abstract class ReceiverParent<T> : ReceiverAncestor
+    {
+        [Inject]
+        public IFakeService ParentService;
+    }
+
+    public class ReceiverWithAncestor : ReceiverParent<int> { }
+
     [TestFixture]
     public class InjectorTests
     {
@@ -218,6 +253,36 @@ namespace mtti.Inject
 
             Assert.AreSame(_fakeService, receiver.FakeService);
             Assert.AreSame(_anotherFakeService, receiver.AnotherFakeService);
+        }
+
+        [Test]
+        public void InjectInherited()
+        {
+            var receiver = new ReceiverSubclass();
+            _injector.Inject(receiver);
+
+            Assert.AreSame(_fakeService, receiver.SuperFakeService);
+            Assert.IsTrue(receiver.SuperMethodCalled);
+        }
+
+        [Test]
+        public void InjectGenericInherited()
+        {
+            var receiver = new GenericReceiverSubclass();
+            _injector.Inject(receiver);
+
+            Assert.AreSame(_fakeService, receiver.SuperFakeService);
+            Assert.IsTrue(receiver.SuperMethodCalled);
+        }
+
+        [Test]
+        public void InjectAncestor()
+        {
+            var receiver = new ReceiverWithAncestor();
+            _injector.Inject(receiver);
+
+            Assert.AreSame(_fakeService, receiver.AncestorService);
+            Assert.AreSame(_fakeService, receiver.ParentService);
         }
 
         [Test]
