@@ -205,6 +205,11 @@ namespace mtti.Inject
         /// <param name="obj">An instance of the injectable.</param>
         public Injector Bind(Type type, object obj)
         {
+            if (obj == null)
+            {
+                throw new ArgumentNullException("obj");
+            }
+
             if (_dependencies.ContainsKey(type))
             {
                 throw new DependencyInjectionException("Already bound: " + type.ToString());
