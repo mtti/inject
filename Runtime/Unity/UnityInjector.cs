@@ -140,6 +140,19 @@ namespace mtti.Inject
             }
         }
 
+        /// <summary>
+        /// Inject dependencies into all loaded scenes.
+        /// </summary>
+        public void InjectOpenScenes()
+        {
+            for (int i = 0, count = SceneManager.sceneCount; i < count; i++)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+                if (!scene.isLoaded) continue;
+                Inject(scene);
+            }
+        }
+
         private void Initialize()
         {
             Bind<UnityInjector>(this);
