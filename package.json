@@ -1,9 +1,9 @@
 {
   "name": "com.mattihiltunen.inject",
-  "version": "1.0.0",
+  "version": "0.0.5",
   "displayName": "mtti.Inject",
   "description": "Simple dependency injector",
-  "unity": "2020.3",
+  "unity": "2021.3",
   "author": {
     "name": "Matti Hiltunen",
     "url": "https://www.mattihiltunen.com"
