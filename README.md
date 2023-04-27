@@ -2,15 +2,28 @@
 
 **mtti.Inject** is a simple dependency injector for the Unity engine.
 
-Originally written for my personal use because I wanted to better understand how dependency injection frameworks work. Now resuming development in 2022 after a two-year hiatus. For your own projects you should consider a more established framework like [Zenject](https://github.com/modesttree/Zenject).
+Written for my personal use because I wanted to better understand how dependency injection frameworks work. For your own projects you should consider a more established framework like [Zenject](https://github.com/modesttree/Zenject).
 
-## Basic usage
+## Getting started
 
-1. No UPM package is currently available, so you have to add this repository into your Unity project as a package: `git submodule add git@github.com:mtti/inject.git Packages/com.mattihiltunen.inject`.
-2. Add the `mtti.Inject.DependencyInjector` MonoBehaviour to an empty GameObject, or to your existing "main" GameObject if you have one.
-3. Implement services as plain C# classes (not as MonoBehaviours or ScriptableObjects) and mark them with `mtti.Inject.ServiceAttribute`.
-4. Add a method to your MonoBehaviours to receive dependencies. You can call the methods whatever you want and they don't need to be `public` either. Just mark them with `mtti.Inject.InjectAttribute`.
-5. If you create new GameObjects programmatically (from prefabs with `Instantiate`, for example) inject dependencies into them manually.
+No UPM package is currently available, so you have to either add this library as a dependency to you project's `manifest.json` using the GitHub URL:
+
+```
+"com.mattihiltunen.inject": "https://github.com/mtti/inject.git",
+```
+
+OR alternatively if you are using Git you can add this repository as a Git submodule under `Packages/`:
+
+```
+git submodule add git@github.com:mtti/inject.git Packages/com.mattihiltunen.inject
+```
+
+then,
+
+1. Add the `mtti.Inject.DependencyInjector` MonoBehaviour to an empty GameObject, or to your existing "main" GameObject if you have one.
+2. Implement services as plain C# classes (not as MonoBehaviours or ScriptableObjects) and mark them with `mtti.Inject.ServiceAttribute`.
+3. Add a method to your MonoBehaviours to receive dependencies. You can call the methods whatever you want and they don't need to be `public` either. Just mark them with `mtti.Inject.InjectAttribute`.
+4. If you create new GameObjects programmatically (from prefabs with `Instantiate`, for example) inject dependencies into them manually.
 
 ### Adding the dependency injector component
 
